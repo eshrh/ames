@@ -39,7 +39,7 @@ get_last_id() {
     IFS=',' read -ra ids <<< $list
     newest_card_id=${ids[0]}
     for n in "${ids[@]}" ; do
-        [[ n > newest_card_id ]] && newest_card_id=$n
+        [[ "$n" > "$newest_card_id" ]] && newest_card_id=$n
     done
     return 0
 }
@@ -106,7 +106,6 @@ screenshot() {
     ffmpeg -i $path "/tmp/$(basename $path | cut -d "." -f-2).webp" -hide_banner -loglevel error
     rm $path
     path="/tmp/$(basename $path | cut -d "." -f-2).webp"
-
     echo "$geom" > /tmp/previous-maim-screenshot
     store_file "$path"
     update_img $(basename $path)
