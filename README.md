@@ -21,4 +21,7 @@ Ames automates the process of adding screenshots and desktop audio clips to your
     * `sh ~/path/to/ames.sh -s`: prompt for an interactive screenshot selection
     * `sh ~/path/to/ames.sh -a`: repeat the previous screenshot selection. If there is no previous selection, default to -s.
     * `sh ~/path/to/ames.sh -w`: screenshot the currently active window (requires xdotool)
+    
+## Notes
+Audio is by default stored with the opus codec at a 32k bitrate. If you are recording music and would like better audio quality in exchange for larger files, you can change this on line 155.
   
