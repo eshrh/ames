@@ -109,6 +109,8 @@ screenshot() {
     echo "$geom" > /tmp/previous-maim-screenshot
     store_file "$path"
     update_img $(basename $path)
+    notify-send --hint=int:transient:1 -t 500 -u normal "Screenshot added"
+
 }
 
 again() {
@@ -122,6 +124,7 @@ again() {
         store_file "$path"
         get_last_id
         update_img $(basename $path)
+        notify-send --hint=int:transient:1 -t 500 -u normal "Screenshot added"
     else
         screenshot
     fi
@@ -136,6 +139,7 @@ screenshot_window() {
 
     store_file "$path"
     update_img $(basename $path)
+    notify-send --hint=int:transient:1 -t 500 -u normal "Screenshot added"
 }
 
 
@@ -146,6 +150,7 @@ record() {
         local audioFile=$(mktemp /tmp/ffmpeg-recording.XXXXXX.opus)
         echo "$audioFile" > "$recordingToggle"
 
+        notify-send --hint=int:transient:1 -t 500 -u normal "Recording started..."
         local output=$(pactl list | grep -A2 '^Source #' | grep 'Name: .*analog.*\.monitor' | awk '{print $NF}' | tail -n1)
         ffmpeg -f pulse -i $output -ac 2 -af silenceremove=1:0:-50dB \
             -acodec libopus -ab 32k -y "$audioFile" 1>/dev/null &
@@ -156,6 +161,7 @@ record() {
 
         store_file "${audioFile}"
         update_sound $(basename $audioFile)
+        notify-send --hint=int:transient:1 -t 500 -u normal "Recording added"
     fi
 }
 

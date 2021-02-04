@@ -10,6 +10,7 @@ Ames automates the process of adding screenshots and desktop audio clips to your
 + `ffmpeg`: encoding desktop audio
 + `maim`: screenshots
 + `xdotool`: detecting active windows
++ `libnotify`: sending notifications
 
 
 ## Installation
