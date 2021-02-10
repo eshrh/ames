@@ -23,7 +23,6 @@ Ames automates the process of adding screenshots and desktop audio clips to your
     * `sh ~/path/to/ames.sh -w`: screenshot the currently active window (requires xdotool)
     
 ## Notes
-+ Audio is by default stored with the opus codec at a 32k bitrate. If you are recording music and would like better audio quality in exchange for larger files, you can change this on line 155.
 + You may also define config options in `~/.config/ames/config`. These must be bash variable declarations, with no spaces like in the script.
 + ames tries to pick the right output monitor automatically. If this doesn't work for you, you can first list monitor sinks with `pactl list | grep -A2 '^Source #'` and then redefine the `OUTPUT_MONITOR` variable in the script or a config file with the name of the correct sink.
   
