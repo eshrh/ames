@@ -26,6 +26,7 @@ IMAGE_FORMAT="webp"
 CONFIG_FILE_PATH="$HOME/.config/ames/config"
 
 if [[ -f "$CONFIG_FILE_PATH" ]]; then
+    # shellcheck disable=SC1090
     source "$CONFIG_FILE_PATH"
 fi
 
@@ -46,27 +47,40 @@ notify_screenshot_add() {
     fi
 }
 
+maxn() {
+    tr -d ' ' | tr ',' '\n' | awk '
+    BEGIN {
+        max = 0
+    }
+    {
+        if ($0 > max) {
+            max = $0
+        }
+    }
+    END {
+        print max
+    }
+    '
+}
+
 get_last_id() {
-   local new_card_request='{
+    local new_card_request='{
         "action": "findNotes",
         "version": 6,
         "params": {
         "query": "added:1"
         }
     }'
-    local new_card_response=$(curl localhost:8765 -X POST -d "$new_card_request" --silent)
-    local list=$(echo $new_card_response | cut -d "[" -f2 | cut -d "]" -f1)
-    IFS=',' read -ra ids <<< $list
-    newest_card_id=${ids[0]}
-    for n in "${ids[@]}" ; do
-        [[ "$n" > "$newest_card_id" ]] && newest_card_id=$n
-    done
-    return 0
+    local new_card_response list
+
+    new_card_response=$(ankiconnect_request "$new_card_request")
+    list=$(echo "$new_card_response" | cut -d "[" -f2 | cut -d "]" -f1)
+    newest_card_id=$(echo "$list" | maxn)
 }
 
 store_file() {
     local -r dir=${1:?}
-    local -r name=$(basename $dir)
+    local -r name=$(basename -- "$dir")
     local request='{
         "action": "storeMediaFile",
         "version": 6,
@@ -77,7 +91,30 @@ store_file() {
     }'
     request=${request//<name>/$name}
     request=${request/<dir>/$dir}
-    curl localhost:8765 -X POST -d "$request" --silent >> /dev/null
+    ankiconnect_request "$request" >>/dev/null
+}
+
+gui_browse() {
+    local -r query=${1:-nid:1}
+    local request='{
+        "action": "guiBrowse",
+        "version": 6,
+        "params": {
+            "query": "<QUERY>"
+        }
+    }'
+    request=${request/<QUERY>/$query}
+    ankiconnect_request "$request"
+}
+
+ankiconnect_request() {
+    curl --silent localhost:8765 -X POST -d "${1:?}"
+}
+
+safe_request() {
+    gui_browse "nid:1"
+    ankiconnect_request "${1:?}"
+    gui_browse "nid:${newest_card_id:?Newest card is not known.}"
 }
 
 update_img() {
@@ -95,7 +132,8 @@ update_img() {
     update_request=${update_request/<id>/$newest_card_id}
     update_request=${update_request/<SCREENSHOT_FIELD>/$SCREENSHOT_FIELD}
     update_request=${update_request/<path>/$1}
-    local update_response=$(curl localhost:8765 -X POST -d "$update_request" --silent)
+
+    safe_request "$update_request"
 }
 
 update_sound() {
@@ -115,34 +153,45 @@ update_sound() {
     update_request=${update_request/<id>/$newest_card_id}
     update_request=${update_request/<AUDIO_FIELD>/$AUDIO_FIELD}
     update_request=${update_request/<path>/$1}
-    local update_response=$(curl localhost:8765 -X POST -d "$update_request" --silent)
+
+    safe_request "$update_request"
 }
 
 screenshot() {
-    local geom=$(slop)
-    local path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
+    local -r geom=$(slop)
+    local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
+    local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
-    maim $path -g $geom
-    ffmpeg -i $path "/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT" -hide_banner -loglevel error
-    rm $path
-    path="/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT"
-    echo "$geom" > /tmp/previous-maim-screenshot
-    store_file "$path"
-    update_img $(basename $path)
+    maim "$path" -g "$geom"
+    ffmpeg -nostdin \
+        -hide_banner \
+        -loglevel error \
+        -i "$path" \
+        "$converted_path"
+
+    rm "$path"
+    echo "$geom" >/tmp/previous-maim-screenshot
+    store_file "$converted_path"
+    update_img "$(basename -- "$converted_path")"
     notify_screenshot_add
 }
 
 again() {
-    local path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
-    if [[ -f /tmp/previous-maim-screenshot ]]; then
-        maim $path -g $(cat /tmp/previous-maim-screenshot)
-        ffmpeg -i $path "/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT" -hide_banner -loglevel error
-        rm $path
-        path="/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT"
+    local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
+    local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
-        store_file "$path"
+    if [[ -f /tmp/previous-maim-screenshot ]]; then
+        maim "$path" -g "$(cat /tmp/previous-maim-screenshot)"
+        ffmpeg -nostdin \
+            -hide_banner \
+            -loglevel error \
+            -i "$path" \
+            "$converted_path"
+
+        rm "$path"
+        store_file "$converted_path"
         get_last_id
-        update_img $(basename $path)
+        update_img "$(basename -- "$converted_path")"
         notify_screenshot_add
     else
         screenshot
@@ -150,30 +199,45 @@ again() {
 }
 
 screenshot_window() {
-    local path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
-    maim $path -i $(xdotool getactivewindow)
-    ffmpeg -i $path "/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT" -hide_banner -loglevel error
-    rm $path
-    path="/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT"
+    local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
+    local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
-    store_file "$path"
-    update_img $(basename $path)
+    maim "$path" -i "$(xdotool getactivewindow)"
+    ffmpeg -nostdin \
+        -hide_banner \
+        -loglevel error \
+        -i "$path" "/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
+
+    rm "$path"
+
+    store_file "$converted_path"
+    update_img "$(basename -- "$converted_path")"
     notify_screenshot_add
 }
 
-
 record() {
     # this section is a heavily modified version of the linux audio script written by salamander on qm's animecards.
-    local recordingToggle="/tmp/ffmpeg-recording-audio"
+    local -r recordingToggle="/tmp/ffmpeg-recording-audio"
+
     if [[ ! -f /tmp/ffmpeg-recording-audio ]]; then
-        local audioFile=$(mktemp "/tmp/ffmpeg-recording.XXXXXX.$AUDIO_FORMAT")
-        echo "$audioFile" > "$recordingToggle"
+        local -r audioFile=$(mktemp "/tmp/ffmpeg-recording.XXXXXX.$AUDIO_FORMAT")
+        echo "$audioFile" >"$recordingToggle"
 
         if [ "$OUTPUT_MONITOR" == "" ]; then
-            local output=$(pactl info | grep 'Default Sink' | awk '{print $NF ".monitor"}')
+            local -r output=$(pactl info | grep 'Default Sink' | awk '{print $NF ".monitor"}')
         else
-            local output="$OUTPUT_MONITOR"
+            local -r output="$OUTPUT_MONITOR"
         fi
+
+        ffmpeg -nostdin \
+            -y \
+            -loglevel error \
+            -f pulse \
+            -i "$output" \
+            -ac 2 \
+            -af 'silenceremove=1:0:-50dB' \
+            -ab $AUDIO_BITRATE \
+            "$audioFile" 1>/dev/null &
 
         if [[ "$LANG" == en* ]]; then
             notify-send --hint=int:transient:1 -t 500 -u normal "Recording started..."
@@ -182,14 +246,13 @@ record() {
             notify-send --hint=int:transient:1 -t 500 -u normal "録音しています..."
         fi
 
-        ffmpeg -f pulse -i $output -ac 2 -af silenceremove=1:0:-50dB -ab $AUDIO_BITRATE -y "$audioFile" 1>/dev/null &
+        echo "Started recording."
     else
-        local audioFile="$(cat "$recordingToggle")"
+        local -r audioFile="$(cat "$recordingToggle")"
         rm "$recordingToggle"
         killall ffmpeg
-
         store_file "${audioFile}"
-        update_sound $(basename $audioFile)
+        update_sound "$(basename -- "$audioFile")"
 
         if [[ "$LANG" == en* ]]; then
             notify-send --hint=int:transient:1 -t 500 -u normal "Recording added"
@@ -200,6 +263,11 @@ record() {
     fi
 }
 
+if [[ -z ${1-} ]]; then
+    usage
+    exit 1
+fi
+
 while getopts 'hrsaw' flag; do
     case "${flag}" in
         h) usage ;;
@@ -207,5 +275,6 @@ while getopts 'hrsaw' flag; do
         s) screenshot ;;
         a) again ;;
         w) screenshot_window ;;
+        *) ;;
     esac
 done
