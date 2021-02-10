@@ -123,9 +123,9 @@ screenshot() {
     local path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
 
     maim $path -g $geom
-    ffmpeg -i $path "/tmp/$(basename $path | cut -d "." -f-2).webp" -hide_banner -loglevel error
+    ffmpeg -i $path "/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT" -hide_banner -loglevel error
     rm $path
-    path="/tmp/$(basename $path | cut -d "." -f-2).webp"
+    path="/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT"
     echo "$geom" > /tmp/previous-maim-screenshot
     store_file "$path"
     update_img $(basename $path)
@@ -136,9 +136,9 @@ again() {
     local path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
     if [[ -f /tmp/previous-maim-screenshot ]]; then
         maim $path -g $(cat /tmp/previous-maim-screenshot)
-        ffmpeg -i $path "/tmp/$(basename $path | cut -d "." -f-2).webp" -hide_banner -loglevel error
+        ffmpeg -i $path "/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT" -hide_banner -loglevel error
         rm $path
-        path="/tmp/$(basename $path | cut -d "." -f-2).webp"
+        path="/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT"
 
         store_file "$path"
         get_last_id
