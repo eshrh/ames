@@ -238,6 +238,11 @@ record() {
     fi
 }
 
+if [[ -z ${1-} ]]; then
+    usage
+    exit 1
+fi
+
 while getopts 'hrsaw' flag; do
     case "${flag}" in
         h) usage ;;
@@ -245,5 +250,6 @@ while getopts 'hrsaw' flag; do
         s) screenshot ;;
         a) again ;;
         w) screenshot_window ;;
+        *) ;;
     esac
 done
