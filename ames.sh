@@ -26,6 +26,7 @@ IMAGE_FORMAT="webp"
 CONFIG_FILE_PATH="$HOME/.config/ames/config"
 
 if [[ -f "$CONFIG_FILE_PATH" ]]; then
+    # shellcheck disable=SC1090
     source "$CONFIG_FILE_PATH"
 fi
 
@@ -79,7 +80,7 @@ get_last_id() {
 
 store_file() {
     local -r dir=${1:?}
-    local -r name=$(basename $dir)
+    local -r name=$(basename -- "$dir")
     local request='{
         "action": "storeMediaFile",
         "version": 6,
@@ -90,7 +91,7 @@ store_file() {
     }'
     request=${request//<name>/$name}
     request=${request/<dir>/$dir}
-    ankiconnect_request "$request" >> /dev/null
+    ankiconnect_request "$request" >>/dev/null
 }
 
 gui_browse() {
@@ -157,30 +158,40 @@ update_sound() {
 }
 
 screenshot() {
-    local geom=$(slop)
-    local path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
+    local -r geom=$(slop)
+    local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
 
-    maim $path -g $geom
-    ffmpeg -i $path "/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT" -hide_banner -loglevel error
-    rm $path
-    path="/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT"
-    echo "$geom" > /tmp/previous-maim-screenshot
+    maim "$path" -g "$geom"
+    ffmpeg -nostdin \
+        -hide_banner \
+        -loglevel error \
+        -i "$path" \
+        "/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
+
+    rm "$path"
+    path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
+    echo "$geom" >/tmp/previous-maim-screenshot
     store_file "$path"
-    update_img $(basename $path)
+    update_img "$(basename -- "$path")"
     notify_screenshot_add
 }
 
 again() {
-    local path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
+    local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
     if [[ -f /tmp/previous-maim-screenshot ]]; then
-        maim $path -g $(cat /tmp/previous-maim-screenshot)
-        ffmpeg -i $path "/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT" -hide_banner -loglevel error
-        rm $path
-        path="/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT"
+        maim "$path" -g "$(cat /tmp/previous-maim-screenshot)"
+        ffmpeg -nostdin \
+            -hide_banner \
+            -loglevel error \
+            -i "$path" \
+            "/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
+
+        rm "$path"
+        path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
         store_file "$path"
         get_last_id
-        update_img $(basename $path)
+        update_img "$(basename -- "$path")"
         notify_screenshot_add
     else
         screenshot
@@ -188,30 +199,44 @@ again() {
 }
 
 screenshot_window() {
-    local path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
-    maim $path -i $(xdotool getactivewindow)
-    ffmpeg -i $path "/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT" -hide_banner -loglevel error
-    rm $path
-    path="/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT"
+    local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
+    maim "$path" -i "$(xdotool getactivewindow)"
+    ffmpeg -nostdin \
+        -hide_banner \
+        -loglevel error \
+        -i "$path" "/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
+
+    rm "$path"
+    path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
     store_file "$path"
-    update_img $(basename $path)
+    update_img "$(basename -- "$path")"
     notify_screenshot_add
 }
 
-
 record() {
     # this section is a heavily modified version of the linux audio script written by salamander on qm's animecards.
-    local recordingToggle="/tmp/ffmpeg-recording-audio"
+    local -r recordingToggle="/tmp/ffmpeg-recording-audio"
+
     if [[ ! -f /tmp/ffmpeg-recording-audio ]]; then
-        local audioFile=$(mktemp "/tmp/ffmpeg-recording.XXXXXX.$AUDIO_FORMAT")
-        echo "$audioFile" > "$recordingToggle"
+        local -r audioFile=$(mktemp "/tmp/ffmpeg-recording.XXXXXX.$AUDIO_FORMAT")
+        echo "$audioFile" >"$recordingToggle"
 
         if [ "$OUTPUT_MONITOR" == "" ]; then
-            local output=$(pactl info | grep 'Default Sink' | awk '{print $NF ".monitor"}')
+            local -r output=$(pactl info | grep 'Default Sink' | awk '{print $NF ".monitor"}')
         else
-            local output="$OUTPUT_MONITOR"
+            local -r output="$OUTPUT_MONITOR"
         fi
+
+        ffmpeg -nostdin \
+            -y \
+            -loglevel error \
+            -f pulse \
+            -i "$output" \
+            -ac 2 \
+            -af 'silenceremove=1:0:-50dB' \
+            -ab $AUDIO_BITRATE \
+            "$audioFile" 1>/dev/null &
 
         if [[ "$LANG" == en* ]]; then
             notify-send --hint=int:transient:1 -t 500 -u normal "Recording started..."
@@ -220,14 +245,13 @@ record() {
             notify-send --hint=int:transient:1 -t 500 -u normal "録音しています..."
         fi
 
-        ffmpeg -f pulse -i $output -ac 2 -af silenceremove=1:0:-50dB -ab $AUDIO_BITRATE -y "$audioFile" 1>/dev/null &
+        echo "Started recording."
     else
-        local audioFile="$(cat "$recordingToggle")"
+        local -r audioFile="$(cat "$recordingToggle")"
         rm "$recordingToggle"
         killall ffmpeg
-
         store_file "${audioFile}"
-        update_sound $(basename $audioFile)
+        update_sound "$(basename -- "$audioFile")"
 
         if [[ "$LANG" == en* ]]; then
             notify-send --hint=int:transient:1 -t 500 -u normal "Recording added"
