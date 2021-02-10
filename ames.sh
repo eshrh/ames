@@ -17,10 +17,16 @@ set -euo pipefail
 
 AUDIO_FIELD="audio"
 SCREENSHOT_FIELD="image"
+# leave OUTPUT_MONITOR blank to autoselect a monitor.
 OUTPUT_MONITOR=""
+AUDIO_BITRATE="64k"
+AUDIO_FORMAT="opus"
+IMAGE_FORMAT="webp"
 
-if [[ -f "~/.config/ames/config" ]]; then
-    "source ~/.config/ames/config"
+CONFIG_FILE_PATH="$HOME/.config/ames/config"
+
+if [[ -f "$CONFIG_FILE_PATH" ]]; then
+    source "$CONFIG_FILE_PATH"
 fi
 
 usage() {
@@ -138,9 +144,9 @@ again() {
 screenshot_window() {
     local path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
     maim $path -i $(xdotool getactivewindow)
-    ffmpeg -i $path "/tmp/$(basename $path | cut -d "." -f-2).webp" -hide_banner -loglevel error
+    ffmpeg -i $path "/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT" -hide_banner -loglevel error
     rm $path
-    path="/tmp/$(basename $path | cut -d "." -f-2).webp"
+    path="/tmp/$(basename $path | cut -d "." -f-2).$IMAGE_FORMAT"
 
     store_file "$path"
     update_img $(basename $path)
@@ -152,7 +158,7 @@ record() {
     # this section is a heavily modified version of the linux audio script written by salamander on qm's animecards.
     local recordingToggle="/tmp/ffmpeg-recording-audio"
     if [[ ! -f /tmp/ffmpeg-recording-audio ]]; then
-        local audioFile=$(mktemp /tmp/ffmpeg-recording.XXXXXX.opus)
+        local audioFile=$(mktemp "/tmp/ffmpeg-recording.XXXXXX.$AUDIO_FORMAT")
         echo "$audioFile" > "$recordingToggle"
 
         if [ "$OUTPUT_MONITOR" == "" ]; then
@@ -162,8 +168,7 @@ record() {
         fi
 
         notify-send --hint=int:transient:1 -t 500 -u normal "Recording started..."
-        ffmpeg -f pulse -i $output -ac 2 -af silenceremove=1:0:-50dB \
-            -acodec libopus -ab 64k -y "$audioFile" 1>/dev/null &
+        ffmpeg -f pulse -i $output -ac 2 -af silenceremove=1:0:-50dB -ab $AUDIO_BITRATE -y "$audioFile" 1>/dev/null &
     else
         local audioFile="$(cat "$recordingToggle")"
         rm "$recordingToggle"
