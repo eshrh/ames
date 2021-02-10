@@ -54,13 +54,14 @@ get_last_id() {
         "query": "added:1"
         }
     }'
-    local new_card_response=$(curl localhost:8765 -X POST -d "$new_card_request" --silent)
-    local list=$(echo $new_card_response | cut -d "[" -f2 | cut -d "]" -f1)
+    local new_card_response=$(ankiconnect_request "$new_card_request")
+    local list=$(echo "$new_card_response" | cut -d "[" -f2 | cut -d "]" -f1)
     IFS=',' read -ra ids <<< $list
     newest_card_id=${ids[0]}
     for n in "${ids[@]}" ; do
         [[ "$n" > "$newest_card_id" ]] && newest_card_id=$n
     done
+    newest_card_id=${newest_card_id// /}
     return 0
 }
 
@@ -77,7 +78,30 @@ store_file() {
     }'
     request=${request//<name>/$name}
     request=${request/<dir>/$dir}
-    curl localhost:8765 -X POST -d "$request" --silent >> /dev/null
+    ankiconnect_request "$request" >> /dev/null
+}
+
+gui_browse() {
+    local -r query=${1:-nid:1}
+    local request='{
+        "action": "guiBrowse",
+        "version": 6,
+        "params": {
+            "query": "<QUERY>"
+        }
+    }'
+    request=${request/<QUERY>/$query}
+    ankiconnect_request "$request"
+}
+
+ankiconnect_request() {
+    curl --silent localhost:8765 -X POST -d "${1:?}"
+}
+
+safe_request() {
+    gui_browse "nid:1"
+    ankiconnect_request "${1:?}"
+    gui_browse "nid:${newest_card_id:?Newest card is not known.}"
 }
 
 update_img() {
@@ -95,7 +119,8 @@ update_img() {
     update_request=${update_request/<id>/$newest_card_id}
     update_request=${update_request/<SCREENSHOT_FIELD>/$SCREENSHOT_FIELD}
     update_request=${update_request/<path>/$1}
-    local update_response=$(curl localhost:8765 -X POST -d "$update_request" --silent)
+
+    safe_request "$update_request"
 }
 
 update_sound() {
@@ -115,7 +140,8 @@ update_sound() {
     update_request=${update_request/<id>/$newest_card_id}
     update_request=${update_request/<AUDIO_FIELD>/$AUDIO_FIELD}
     update_request=${update_request/<path>/$1}
-    local update_response=$(curl localhost:8765 -X POST -d "$update_request" --silent)
+
+    safe_request "$update_request"
 }
 
 screenshot() {
