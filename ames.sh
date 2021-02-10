@@ -41,7 +41,7 @@ notify_screenshot_add() {
     if [[ "$LANG" == en* ]]; then
         notify-send --hint=int:transient:1 -t 500 -u normal "Screenshot added"
     fi
-    if [[ "$LANG" == jp* ]]; then
+    if [[ "$LANG" == ja* ]]; then
         notify-send --hint=int:transient:1 -t 500 -u normal "スクリーンショット付けました"
     fi
 }
@@ -178,7 +178,7 @@ record() {
         if [[ "$LANG" == en* ]]; then
             notify-send --hint=int:transient:1 -t 500 -u normal "Recording started..."
         fi
-        if [[ "$LANG" == jp* ]]; then
+        if [[ "$LANG" == ja* ]]; then
             notify-send --hint=int:transient:1 -t 500 -u normal "録音しています..."
         fi
 
@@ -194,7 +194,7 @@ record() {
         if [[ "$LANG" == en* ]]; then
             notify-send --hint=int:transient:1 -t 500 -u normal "Recording added"
         fi
-        if [[ "$LANG" == jp* ]]; then
+        if [[ "$LANG" == ja* ]]; then
             notify-send --hint=int:transient:1 -t 500 -u normal "録音付けました"
         fi
     fi
