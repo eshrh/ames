@@ -46,23 +46,35 @@ notify_screenshot_add() {
     fi
 }
 
+maxn() {
+    tr -d ' ' | tr ',' '\n' | awk '
+    BEGIN {
+        max = 0
+    }
+    {
+        if ($0 > max) {
+            max = $0
+        }
+    }
+    END {
+        print max
+    }
+    '
+}
+
 get_last_id() {
-   local new_card_request='{
+    local new_card_request='{
         "action": "findNotes",
         "version": 6,
         "params": {
         "query": "added:1"
         }
     }'
-    local new_card_response=$(ankiconnect_request "$new_card_request")
-    local list=$(echo "$new_card_response" | cut -d "[" -f2 | cut -d "]" -f1)
-    IFS=',' read -ra ids <<< $list
-    newest_card_id=${ids[0]}
-    for n in "${ids[@]}" ; do
-        [[ "$n" > "$newest_card_id" ]] && newest_card_id=$n
-    done
-    newest_card_id=${newest_card_id// /}
-    return 0
+    local new_card_response list
+
+    new_card_response=$(ankiconnect_request "$new_card_request")
+    list=$(echo "$new_card_response" | cut -d "[" -f2 | cut -d "]" -f1)
+    newest_card_id=$(echo "$list" | maxn)
 }
 
 store_file() {
