@@ -37,6 +37,15 @@ usage() {
     echo "-w: screenshot currently active window (xdotool)"
 }
 
+notify_screenshot_add() {
+    if [[ "$LANG" == en* ]]; then
+        notify-send --hint=int:transient:1 -t 500 -u normal "Screenshot added"
+    fi
+    if [[ "$LANG" == jp* ]]; then
+        notify-send --hint=int:transient:1 -t 500 -u normal "スクリーンショット付けました"
+    fi
+}
+
 get_last_id() {
    local new_card_request='{
         "action": "findNotes",
@@ -120,8 +129,7 @@ screenshot() {
     echo "$geom" > /tmp/previous-maim-screenshot
     store_file "$path"
     update_img $(basename $path)
-    notify-send --hint=int:transient:1 -t 500 -u normal "Screenshot added"
-
+    notify_screenshot_add
 }
 
 again() {
@@ -135,7 +143,7 @@ again() {
         store_file "$path"
         get_last_id
         update_img $(basename $path)
-        notify-send --hint=int:transient:1 -t 500 -u normal "Screenshot added"
+        notify_screenshot_add
     else
         screenshot
     fi
@@ -150,7 +158,7 @@ screenshot_window() {
 
     store_file "$path"
     update_img $(basename $path)
-    notify-send --hint=int:transient:1 -t 500 -u normal "Screenshot added"
+    notify_screenshot_add
 }
 
 
@@ -167,7 +175,13 @@ record() {
             local output="$OUTPUT_MONITOR"
         fi
 
-        notify-send --hint=int:transient:1 -t 500 -u normal "Recording started..."
+        if [[ "$LANG" == en* ]]; then
+            notify-send --hint=int:transient:1 -t 500 -u normal "Recording started..."
+        fi
+        if [[ "$LANG" == jp* ]]; then
+            notify-send --hint=int:transient:1 -t 500 -u normal "録音しています..."
+        fi
+
         ffmpeg -f pulse -i $output -ac 2 -af silenceremove=1:0:-50dB -ab $AUDIO_BITRATE -y "$audioFile" 1>/dev/null &
     else
         local audioFile="$(cat "$recordingToggle")"
@@ -176,7 +190,13 @@ record() {
 
         store_file "${audioFile}"
         update_sound $(basename $audioFile)
-        notify-send --hint=int:transient:1 -t 500 -u normal "Recording added"
+
+        if [[ "$LANG" == en* ]]; then
+            notify-send --hint=int:transient:1 -t 500 -u normal "Recording added"
+        fi
+        if [[ "$LANG" == jp* ]]; then
+            notify-send --hint=int:transient:1 -t 500 -u normal "録音付けました"
+        fi
     fi
 }
 
