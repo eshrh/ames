@@ -17,6 +17,11 @@ set -euo pipefail
 
 AUDIO_FIELD="audio"
 SCREENSHOT_FIELD="image"
+OUTPUT_MONITOR=""
+
+if [[ -f "~/.config/ames/config" ]]; then
+    "source ~/.config/ames/config"
+fi
 
 usage() {
     echo "-h: display this help message"
@@ -150,10 +155,15 @@ record() {
         local audioFile=$(mktemp /tmp/ffmpeg-recording.XXXXXX.opus)
         echo "$audioFile" > "$recordingToggle"
 
+        if [ "$OUTPUT_MONITOR" == "" ]; then
+            local output=$(pactl info | grep 'Default Sink' | awk '{print $NF ".monitor"}')
+        else
+            local output="$OUTPUT_MONITOR"
+        fi
+
         notify-send --hint=int:transient:1 -t 500 -u normal "Recording started..."
-        local output=$(pactl list | grep -A2 '^Source #' | grep 'Name: .*analog.*\.monitor' | awk '{print $NF}' | tail -n1)
         ffmpeg -f pulse -i $output -ac 2 -af silenceremove=1:0:-50dB \
-            -acodec libopus -ab 32k -y "$audioFile" 1>/dev/null &
+            -acodec libopus -ab 64k -y "$audioFile" 1>/dev/null &
     else
         local audioFile="$(cat "$recordingToggle")"
         rm "$recordingToggle"
