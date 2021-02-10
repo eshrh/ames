@@ -1,0 +1,7 @@
+AUDIO_FIELD="audio"
+SCREENSHOT_FIELD="image"
+# leave OUTPUT_MONITOR blank to autoselect a monitor.
+OUTPUT_MONITOR=""
+AUDIO_BITRATE="64k"
+AUDIO_FORMAT="opus"
+IMAGE_FORMAT="webp"
