@@ -160,38 +160,38 @@ update_sound() {
 screenshot() {
     local -r geom=$(slop)
     local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
+    local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
     maim "$path" -g "$geom"
     ffmpeg -nostdin \
         -hide_banner \
         -loglevel error \
         -i "$path" \
-        "/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
+        "$converted_path"
 
     rm "$path"
-    path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
     echo "$geom" >/tmp/previous-maim-screenshot
-    store_file "$path"
-    update_img "$(basename -- "$path")"
+    store_file "$converted_path"
+    update_img "$(basename -- "$converted_path")"
     notify_screenshot_add
 }
 
 again() {
     local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
+    local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
+
     if [[ -f /tmp/previous-maim-screenshot ]]; then
         maim "$path" -g "$(cat /tmp/previous-maim-screenshot)"
         ffmpeg -nostdin \
             -hide_banner \
             -loglevel error \
             -i "$path" \
-            "/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
+            "$converted_path"
 
         rm "$path"
-        path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
-
-        store_file "$path"
+        store_file "$converted_path"
         get_last_id
-        update_img "$(basename -- "$path")"
+        update_img "$(basename -- "$converted_path")"
         notify_screenshot_add
     else
         screenshot
@@ -200,6 +200,8 @@ again() {
 
 screenshot_window() {
     local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
+    local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
+
     maim "$path" -i "$(xdotool getactivewindow)"
     ffmpeg -nostdin \
         -hide_banner \
@@ -207,10 +209,9 @@ screenshot_window() {
         -i "$path" "/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
     rm "$path"
-    path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
-    store_file "$path"
-    update_img "$(basename -- "$path")"
+    store_file "$converted_path"
+    update_img "$(basename -- "$converted_path")"
     notify_screenshot_add
 }
 
