@@ -5,3 +5,6 @@ OUTPUT_MONITOR=""
 AUDIO_BITRATE="64k"
 AUDIO_FORMAT="opus"
 IMAGE_FORMAT="webp"
+# -2 to calculate dimension while preserving aspect ratio.
+IMAGE_WIDTH="-2"
+IMAGE_HEIGHT="300"

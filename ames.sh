@@ -22,6 +22,9 @@ OUTPUT_MONITOR=""
 AUDIO_BITRATE="64k"
 AUDIO_FORMAT="opus"
 IMAGE_FORMAT="webp"
+# -2 to calculate dimension while preserving aspect ratio.
+IMAGE_WIDTH="-2"
+IMAGE_HEIGHT="300"
 
 CONFIG_FILE_PATH="$HOME/.config/ames/config"
 
@@ -167,6 +170,7 @@ screenshot() {
         -hide_banner \
         -loglevel error \
         -i "$path" \
+        -vf scale="$IMAGE_WIDTH:$IMAGE_HEIGHT" \
         "$converted_path"
 
     rm "$path"
@@ -186,6 +190,7 @@ again() {
             -hide_banner \
             -loglevel error \
             -i "$path" \
+            -vf scale="$IMAGE_WIDTH:$IMAGE_HEIGHT" \
             "$converted_path"
 
         rm "$path"
@@ -206,10 +211,11 @@ screenshot_window() {
     ffmpeg -nostdin \
         -hide_banner \
         -loglevel error \
-        -i "$path" "/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
+        -i "$path" \
+        -vf scale="$IMAGE_WIDTH:$IMAGE_HEIGHT" \
+        "$converted_path"
 
     rm "$path"
-
     store_file "$converted_path"
     update_img "$(basename -- "$converted_path")"
     notify_screenshot_add
