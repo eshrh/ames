@@ -32,5 +32,6 @@ Ames automates the process of adding screenshots and desktop audio clips to your
 ## Notes
 + You may also define config options in `~/.config/ames/config`. These must be bash variable declarations, with no spaces like in the script.
 + ames tries to pick the right output monitor automatically. If this doesn't work for you, you can first list monitor sinks with `pactl list | grep -A2 '^Source #'` and then redefine the `OUTPUT_MONITOR` variable in the script or a config file with the name of the correct sink.
++ By default, images are scaled to a height of 300px
 + Prefix your ames command with `LANG=ja` for japanese notifications to achieve *maximum immersion*
   
