@@ -244,6 +244,7 @@ record() {
             -af 'silenceremove=1:0:-50dB' \
             -ab $AUDIO_BITRATE \
             "$audioFile" 1>/dev/null &
+	echo "$!" >> "$recordingToggle"
 
         if [[ "$LANG" == en* ]]; then
             notify-send --hint=int:transient:1 -t 500 -u normal "Recording started..."
@@ -251,12 +252,16 @@ record() {
         if [[ "$LANG" == ja* ]]; then
             notify-send --hint=int:transient:1 -t 500 -u normal "録音しています..."
         fi
-
-        echo "Started recording."
     else
-        local -r audioFile="$(cat "$recordingToggle")"
+        local audioFile="$(sed -n "1p" "$recordingToggle")"
+        local pid="$(sed -n "2p" "$recordingToggle")"
+
         rm "$recordingToggle"
-        killall ffmpeg
+	kill -15 "$pid"
+
+	while [ $(du $audioFile | awk '{ print $1 }') -eq 0 ]; do
+		true
+	done
         store_file "${audioFile}"
         update_sound "$(basename -- "$audioFile")"
 
