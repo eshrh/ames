@@ -21,6 +21,7 @@ SCREENSHOT_FIELD="image"
 OUTPUT_MONITOR=""
 AUDIO_BITRATE="64k"
 AUDIO_FORMAT="opus"
+AUDIO_VOLUME="1"
 IMAGE_FORMAT="webp"
 # -2 to calculate dimension while preserving aspect ratio.
 IMAGE_WIDTH="-2"
@@ -241,7 +242,7 @@ record() {
             -f pulse \
             -i "$output" \
             -ac 2 \
-            -af 'silenceremove=1:0:-50dB' \
+            -af "volume=${AUDIO_VOLUME},silenceremove=1:0:-50dB" \
             -ab $AUDIO_BITRATE \
             "$audioFile" 1>/dev/null &
 	echo "$!" >> "$recordingToggle"
