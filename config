@@ -4,6 +4,7 @@ SCREENSHOT_FIELD="image"
 OUTPUT_MONITOR=""
 AUDIO_BITRATE="64k"
 AUDIO_FORMAT="opus"
+AUDIO_VOLUME="1"
 IMAGE_FORMAT="webp"
 # -2 to calculate dimension while preserving aspect ratio.
 IMAGE_WIDTH="-2"
