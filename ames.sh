@@ -17,6 +17,7 @@ set -euo pipefail
 
 AUDIO_FIELD="audio"
 SCREENSHOT_FIELD="image"
+SENTENCE_FIELD="Sentence"
 # leave OUTPUT_MONITOR blank to autoselect a monitor.
 OUTPUT_MONITOR=""
 AUDIO_BITRATE="64k"
@@ -119,6 +120,26 @@ safe_request() {
     gui_browse "nid:1"
     ankiconnect_request "${1:?}"
     gui_browse "nid:${newest_card_id:?Newest card is not known.}"
+}
+
+update_sentence() {
+    get_last_id
+    local update_request='{
+        "action": "updateNoteFields",
+        "version": 6,
+        "params": {
+            "note": {
+                "id": <id>,
+                "fields": { "<SENTENCE_FIELD>": "<sentence>" }
+            }
+        }
+    }'
+
+    update_request=${update_request/<id>/$newest_card_id}
+    update_request=${update_request/<SENTENCE_FIELD>/$SENTENCE_FIELD}
+    update_request=${update_request/<sentence>/$1}
+    echo $update_request
+    safe_request "$update_request"
 }
 
 update_img() {
@@ -275,18 +296,25 @@ record() {
     fi
 }
 
+clipboard(){
+    local -r sentence=$(xsel -b)
+
+    update_sentence "${sentence}"
+}
+
 if [[ -z ${1-} ]]; then
     usage
     exit 1
 fi
 
-while getopts 'hrsaw' flag; do
+while getopts 'hrsawc' flag; do
     case "${flag}" in
         h) usage ;;
         r) record ;;
         s) screenshot ;;
         a) again ;;
         w) screenshot_window ;;
+        c) clipboard ;;
         *) ;;
     esac
 done
