@@ -23,6 +23,7 @@ Ames automates the process of adding screenshots and desktop audio clips to your
     * `sh ~/path/to/ames.sh -s`: prompt for an interactive screenshot selection
     * `sh ~/path/to/ames.sh -a`: repeat the previous screenshot selection. If there is no previous selection, default to -s.
     * `sh ~/path/to/ames.sh -w`: screenshot the currently active window (requires xdotool)
+    * `sh ~/path/to/ames.sh -c`: pasted the currently copied sentence in the clipboard (requires xsel)
 
 ### Arch users
 1. Install the `ames` package from the AUR
