@@ -11,6 +11,7 @@ Ames automates the process of adding screenshots and desktop audio clips to your
 + `maim`: screenshots
 + `xdotool`: detecting active windows
 + `libnotify`: sending notifications
++ `xsel`: pasting clipboard content
 
 
 ## Installation
