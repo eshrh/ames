@@ -138,7 +138,6 @@ update_sentence() {
     update_request=${update_request/<id>/$newest_card_id}
     update_request=${update_request/<SENTENCE_FIELD>/$SENTENCE_FIELD}
     update_request=${update_request/<sentence>/$1}
-    echo $update_request
     safe_request "$update_request"
 }
 
