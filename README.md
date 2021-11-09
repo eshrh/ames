@@ -6,6 +6,7 @@ Ames automates the process of adding screenshots and desktop audio clips to your
 ## Requirements
 + A bash interpreter
 + Anki and [AnkiConnect](https://ankiweb.net/shared/info/2055492159). *Note that Anki must be running*.
++ X: Wayland version coming soon (?)
 + `pulseaudio` and `pactl`: detecting and recording from audio monitors
 + `ffmpeg`: encoding desktop audio
 + `maim`: screenshots
