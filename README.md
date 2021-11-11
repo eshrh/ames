@@ -1,7 +1,7 @@
 # ames
-anki media extractor script(ames): Update anki cards with desktop audio and screenshots on GNU/linux
+anki media extractor script(ames): Update anki cards with desktop audio, screenshots, and clipboard sentences on GNU/linux
 
-Ames automates the process of adding screenshots and desktop audio clips to your latest added Anki card; making immersion mining smoother and more efficient.
+Ames automates the process of adding information and media to your latest added Anki card; making immersion mining smoother and more efficient.
 
 ## Requirements
 + A bash interpreter
