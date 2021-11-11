@@ -265,7 +265,8 @@ record() {
             -af "volume=${AUDIO_VOLUME},silenceremove=1:0:-50dB" \
             -ab $AUDIO_BITRATE \
             "$audioFile" 1>/dev/null &
-	echo "$!" >> "$recordingToggle"
+
+	    echo "$!" >> "$recordingToggle"
 
         if [[ "$LANG" == en* ]]; then
             notify-send --hint=int:transient:1 -t 500 -u normal "Recording started..."
@@ -278,7 +279,7 @@ record() {
         local pid="$(sed -n "2p" "$recordingToggle")"
 
         rm "$recordingToggle"
-	kill -15 "$pid"
+	    kill -15 "$pid"
 
 	while [ $(du $audioFile | awk '{ print $1 }') -eq 0 ]; do
 		true
