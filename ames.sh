@@ -186,7 +186,7 @@ screenshot() {
     local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
     local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
-    maim "$path" -g "$geom"
+    maim --hidecursor "$path" -g "$geom"
     ffmpeg -nostdin \
         -hide_banner \
         -loglevel error \
@@ -206,7 +206,7 @@ again() {
     local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
     if [[ -f /tmp/previous-maim-screenshot ]]; then
-        maim "$path" -g "$(cat /tmp/previous-maim-screenshot)"
+        maim --hidecursor "$path" -g "$(cat /tmp/previous-maim-screenshot)"
         ffmpeg -nostdin \
             -hide_banner \
             -loglevel error \
@@ -228,7 +228,7 @@ screenshot_window() {
     local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
     local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
-    maim "$path" -i "$(xdotool getactivewindow)"
+    maim --hidecursor "$path" -i "$(xdotool getactivewindow)"
     ffmpeg -nostdin \
         -hide_banner \
         -loglevel error \
