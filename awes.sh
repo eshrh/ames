@@ -28,7 +28,7 @@ IMAGE_FORMAT="webp"
 IMAGE_WIDTH="-2"
 IMAGE_HEIGHT="300"
 
-CONFIG_FILE_PATH="$HOME/.config/ames/config"
+CONFIG_FILE_PATH="$HOME/.config/awes/config"
 
 if [[ -f "$CONFIG_FILE_PATH" ]]; then
     # shellcheck disable=SC1090
@@ -182,11 +182,11 @@ update_sound() {
 }
 
 screenshot() {
-    local -r geom=$(slop)
-    local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
+    local -r geom=$(slurp)
+    local -r path=$(mktemp /tmp/grim-screenshot.XXXXXX.png)
     local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
-    maim --hidecursor "$path" -g "$geom"
+    grim -g "$geom" "$path"
     ffmpeg -nostdin \
         -hide_banner \
         -loglevel error \
@@ -195,18 +195,18 @@ screenshot() {
         "$converted_path"
 
     rm "$path"
-    echo "$geom" >/tmp/previous-maim-screenshot
+    echo "$geom" >/tmp/previous-grim-screenshot
     store_file "$converted_path"
     update_img "$(basename -- "$converted_path")"
     notify_screenshot_add
 }
 
 again() {
-    local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
+    local -r path=$(mktemp /tmp/grim-screenshot.XXXXXX.png)
     local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
-    if [[ -f /tmp/previous-maim-screenshot ]]; then
-        maim --hidecursor "$path" -g "$(cat /tmp/previous-maim-screenshot)"
+    if [[ -f /tmp/previous-grim-screenshot ]]; then
+        grim -g "$(cat /tmp/previous-grim-screenshot)" "$path"
         ffmpeg -nostdin \
             -hide_banner \
             -loglevel error \
@@ -225,10 +225,10 @@ again() {
 }
 
 screenshot_window() {
-    local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
+    local -r path=$(mktemp /tmp/grim-screenshot.XXXXXX.png)
     local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
-    maim --hidecursor "$path" -i "$(xdotool getactivewindow)"
+    swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp -o | grim -g - "$path"
     ffmpeg -nostdin \
         -hide_banner \
         -loglevel error \
@@ -297,7 +297,7 @@ record() {
 }
 
 clipboard(){
-    local -r sentence=$(xsel -b)
+    local -r sentence=$(wl-paste)
 
     update_sentence "${sentence}"
 }
