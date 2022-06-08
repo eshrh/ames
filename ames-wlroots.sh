@@ -28,7 +28,7 @@ IMAGE_FORMAT="webp"
 IMAGE_WIDTH="-2"
 IMAGE_HEIGHT="300"
 
-CONFIG_FILE_PATH="$HOME/.config/awes/config"
+CONFIG_FILE_PATH="$HOME/.config/ames-wlroots/config"
 
 if [[ -f "$CONFIG_FILE_PATH" ]]; then
     # shellcheck disable=SC1090
