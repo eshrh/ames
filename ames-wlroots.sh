@@ -228,7 +228,7 @@ screenshot_window() {
     local -r path=$(mktemp /tmp/grim-screenshot.XXXXXX.png)
     local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
 
-    swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | slurp -o | grim -g - "$path"
+    swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | grim -g - "$path"
     ffmpeg -nostdin \
         -hide_banner \
         -loglevel error \
