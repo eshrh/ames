@@ -6,7 +6,7 @@ Ames automates the process of adding information and media to your latest added 
 ## Requirements
 + A bash interpreter
 + Anki and [AnkiConnect](https://ankiweb.net/shared/info/2055492159). *Note that Anki must be running*.
-+ X: Wayland version coming soon (?)
++ X: Wayland version (wlroots) version on this [branch](https://github.com/eshrh/ames/tree/wlroots)
 + `pulseaudio` and `pactl`: detecting and recording from audio monitors
 + `ffmpeg`: encoding desktop audio
 + `maim`: screenshots
