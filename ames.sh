@@ -137,7 +137,9 @@ update_sentence() {
 
     update_request=${update_request/<id>/$newest_card_id}
     update_request=${update_request/<SENTENCE_FIELD>/$SENTENCE_FIELD}
-    update_request=${update_request/<sentence>/$1}
+    sentence_esc=${1//\\/\\\\}
+    sentence_esc=${sentence_esc//\"/\\\"}
+    update_request=${update_request/<sentence>/$sentence_esc}
     safe_request "$update_request"
 }
 
