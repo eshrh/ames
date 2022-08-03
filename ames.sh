@@ -311,7 +311,16 @@ record() {
 }
 
 clipboard() {
-    local -r sentence=$(xsel -b)
+    if command -v xclip &> /dev/null
+    then
+        local -r sentence=$(xclip -o)
+    elif command -v xsel &> /dev/null
+    then
+        local -r sentence=$(xsel -b)
+    else
+        echo "Couldn't find xclip or xsel." >&2
+        exit
+    fi
 
     update_sentence "${sentence}"
 

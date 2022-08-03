@@ -19,7 +19,8 @@ added Anki card, making immersion mining smoother and more efficient.
 + `maim`: screenshots.
 + `xdotool`: detecting active windows.
 + `libnotify`: sending notifications.
-+ `xsel`: pasting clipboard content.
++ `xclip`: pasting clipboard content (`xsel` is supported, but may be
+  removed in the future)
 
 ## Installation
 
@@ -67,4 +68,3 @@ mkdir -p ~/.config/ames/ && cp /usr/share/ames/config ~/.config/ames/config
 + By default, images are scaled to a height of 300px.
 + Prefix your ames command with `LANG=ja` for
   Japanese notifications to achieve *maximum immersion*.
-
