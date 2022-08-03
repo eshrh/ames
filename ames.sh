@@ -287,8 +287,8 @@ record() {
                         "録音しています..."
         fi
     else
-        local audioFile="$(sed -n "1p" "$recordingToggle")"
-        local pid="$(sed -n "2p" "$recordingToggle")"
+        local -r audioFile="$(sed -n "1p" "$recordingToggle")"
+        local -r pid="$(sed -n "2p" "$recordingToggle")"
 
         rm "$recordingToggle"
             kill -15 "$pid"
