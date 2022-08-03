@@ -298,10 +298,17 @@ record() {
     fi
 }
 
-clipboard(){
+clipboard() {
     local -r sentence=$(xsel -b)
 
     update_sentence "${sentence}"
+
+    if [[ "$LANG" == en* ]]; then
+        notify-send --hint=int:transient:1 -t 500 -u normal "Sentence added"
+    fi
+    if [[ "$LANG" == ja* ]]; then
+        notify-send --hint=int:transient:1 -t 500 -u normal "例文付けました"
+    fi
 }
 
 if [[ -z ${1-} ]]; then
