@@ -293,7 +293,7 @@ record() {
         rm "$recordingToggle"
             kill -15 "$pid"
 
-        while [ $(du $audioFile | awk '{ print $1 }') -eq 0 ]; do
+        while [ "$(du "$audioFile" | awk '{ print $1 }')" -eq 0 ]; do
                 true
         done
         store_file "${audioFile}"
