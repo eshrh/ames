@@ -45,10 +45,12 @@ usage() {
 
 notify_screenshot_add() {
     if [[ "$LANG" == en* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal "Screenshot added"
+        notify-send --hint=int:transient:1 -t 500 -u normal \
+                    "Screenshot added"
     fi
     if [[ "$LANG" == ja* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal "スクリーンショット付けました"
+        notify-send --hint=int:transient:1 -t 500 -u normal \
+                    "スクリーンショット付けました"
     fi
 }
 
@@ -186,7 +188,8 @@ update_sound() {
 screenshot() {
     local -r geom=$(slop)
     local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
-    local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
+    local -r base_path=$(basename -- "$path" | cut -d "." -f-2)
+    local -r converted_path="/tmp/$base_path.$IMAGE_FORMAT"
 
     maim --hidecursor "$path" -g "$geom"
     ffmpeg -nostdin \
@@ -205,7 +208,8 @@ screenshot() {
 
 again() {
     local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
-    local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
+    local -r base_path=$(basename -- "$path" | cut -d "." -f-2)
+    local -r converted_path="/tmp/$base_path.$IMAGE_FORMAT"
 
     if [[ -f /tmp/previous-maim-screenshot ]]; then
         maim --hidecursor "$path" -g "$(cat /tmp/previous-maim-screenshot)"
@@ -228,8 +232,8 @@ again() {
 
 screenshot_window() {
     local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
-    local -r converted_path="/tmp/$(basename -- "$path" | cut -d "." -f-2).$IMAGE_FORMAT"
-
+    local -r base_path=$(basename -- "$path" | cut -d "." -f-2)
+    local -r converted_path="/tmp/$base_path.$IMAGE_FORMAT"
     maim --hidecursor "$path" -i "$(xdotool getactivewindow)"
     ffmpeg -nostdin \
         -hide_banner \
@@ -245,15 +249,19 @@ screenshot_window() {
 }
 
 record() {
-    # this section is a heavily modified version of the linux audio script written by salamander on qm's animecards.
+    # this section is a heavily modified version of the linux audio
+    # script written by salamander on qm's animecards.
     local -r recordingToggle="/tmp/ffmpeg-recording-audio"
 
     if [[ ! -f /tmp/ffmpeg-recording-audio ]]; then
-        local -r audioFile=$(mktemp "/tmp/ffmpeg-recording.XXXXXX.$AUDIO_FORMAT")
+        local -r audioFile=$(mktemp \
+                                 "/tmp/ffmpeg-recording.XXXXXX.$AUDIO_FORMAT")
         echo "$audioFile" >"$recordingToggle"
 
         if [ "$OUTPUT_MONITOR" == "" ]; then
-            local -r output=$(pactl info | grep 'Default Sink' | awk '{print $NF ".monitor"}')
+            local -r output=$(pactl info \
+                                  | grep 'Default Sink' \
+                                  | awk '{print $NF ".monitor"}')
         else
             local -r output="$OUTPUT_MONITOR"
         fi
@@ -268,32 +276,36 @@ record() {
             -ab $AUDIO_BITRATE \
             "$audioFile" 1>/dev/null &
 
-	    echo "$!" >> "$recordingToggle"
+            echo "$!" >> "$recordingToggle"
 
         if [[ "$LANG" == en* ]]; then
-            notify-send --hint=int:transient:1 -t 500 -u normal "Recording started..."
+            notify-send --hint=int:transient:1 -t 500 -u normal \
+                        "Recording started..."
         fi
         if [[ "$LANG" == ja* ]]; then
-            notify-send --hint=int:transient:1 -t 500 -u normal "録音しています..."
+            notify-send --hint=int:transient:1 -t 500 -u normal \
+                        "録音しています..."
         fi
     else
         local audioFile="$(sed -n "1p" "$recordingToggle")"
         local pid="$(sed -n "2p" "$recordingToggle")"
 
         rm "$recordingToggle"
-	    kill -15 "$pid"
+            kill -15 "$pid"
 
-	while [ $(du $audioFile | awk '{ print $1 }') -eq 0 ]; do
-		true
-	done
+        while [ $(du $audioFile | awk '{ print $1 }') -eq 0 ]; do
+                true
+        done
         store_file "${audioFile}"
         update_sound "$(basename -- "$audioFile")"
 
         if [[ "$LANG" == en* ]]; then
-            notify-send --hint=int:transient:1 -t 500 -u normal "Recording added"
+            notify-send --hint=int:transient:1 -t 500 -u normal \
+                        "Recording added"
         fi
         if [[ "$LANG" == ja* ]]; then
-            notify-send --hint=int:transient:1 -t 500 -u normal "録音付けました"
+            notify-send --hint=int:transient:1 -t 500 -u normal \
+                        "録音付けました"
         fi
     fi
 }
@@ -304,10 +316,12 @@ clipboard() {
     update_sentence "${sentence}"
 
     if [[ "$LANG" == en* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal "Sentence added"
+        notify-send --hint=int:transient:1 -t 500 -u normal \
+                    "Sentence added"
     fi
     if [[ "$LANG" == ja* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal "例文付けました"
+        notify-send --hint=int:transient:1 -t 500 -u normal \
+                    "例文付けました"
     fi
 }
 
