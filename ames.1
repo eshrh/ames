@@ -1,0 +1,140 @@
+.TH AMES 1 2022-08 "" "ames User Manual"
+
+.SH NAME
+ames \- anki media extractor script
+
+.SH SYNOPSIS
+.B ames
+[OPTIONS]
+
+.SH DESCRIPTION
+.PP
+Update Anki cards with desktop audio, screenshots, and clipboard
+sentences on GNU/Linux. Ames automates the process of adding
+information and media to your last Anki card, making immersion mining
+smoother and more efficient.
+
+.SH OPTIONS
+.HP
+.B -r
+Begin recording desktop audio. If called when already recording audio,
+then stop and export audio to your latest-created Anki card.
+.HP
+.B -s
+Prompt for an interactive screenshot selection.
+.HP
+.B -a
+Repeat the previous screenshot selection. If there is no previous
+selection, default to -s.
+.HP
+.B -w
+Screenshot the currently active window (requires xdotool).
+
+.HP
+.B -c
+Exports the currently copied text in the clipboard to the sentence
+field.
+
+.SH CONFIGURATION
+.PP
+There are two ways to configure ames. The first is by editing the
+executable itself, which is a script written in bash. The second is
+using a config file at .config/ames/config. This config file must also
+be a valid bash script (so, no spaces around the variable declaration
+equals!) which is run when the script is called.
+
+You can find an example config file at /usr/share/ames/config. The
+following options influence the behavior of ames at runtime.
+
+.HP
+.B AUDIO_FIELD
+
+Name of the anki field in which to insert audio recordings.
+
+.I Default: "audio"
+.HP
+.B SCREENSHOT_FIELD
+
+Name of the anki field in which to insert screenshots.
+
+.I Default: "image"
+.HP
+.B SENTENCE_FIELD
+
+Name of the anki field in which to insert clipboard text.
+
+.I Default: "Sentence"
+.HP
+.B OUTPUT_MONITOR
+
+Name of the audio monitor to record from. If this is blank, then
+attempt to auto-select the correct monitor. You can find valid sources
+using pactl with
+
+pactl list | grep -A2 '^Source #'
+
+.I Default: ""
+.HP
+.B AUDIO_BITRATE
+
+Bitrate to encode recorded audio with. Lower bitrates correspond to
+worse audio quality but smaller filesizes. This should be a string
+that is valid to supply to ffmpeg's -ab option. A bitrate of around
+20k (bits/s) should be sufficient for speech.
+
+.I Default: "64k"
+.HP
+.B AUDIO_FORMAT
+
+Name of the extension of the format to which to re-encode recorded
+audio. For instance, "mp3" or "ogg" are also valid.
+
+.I Default: "opus"
+.HP
+.B AUDIO_VOLUME
+
+Modify the volume of recorded audio. Set to 1 for no modification. 0.5
+will reduce the volume of recorded audio by 50%
+
+.I Default: 1
+.HP
+.B IMAGE_FORMAT
+Name of the extension of the format to which to re-encode screenshots.
+
+.I Defaut: "webp"
+.HP
+.B IMAGE_WIDTH
+
+Width in pixels to resize images to. If this is set to -2, then the
+dimension is calculated to preserve aspect ratio.
+
+.I Default: -2
+.HP
+.B IMAGE_HEIGHT
+
+Height in pixels to resize images to. If this is set to -2, then the
+dimension is calculated to preserve aspect ratio.
+
+.I Default: 300
+
+.SH ENVIRONMENT
+Only one environment affects the behavior of this program, LANG. If this is set to
+any string beginning with "en" then notifications are sent in english.
+
+Currently, the only other language supported is "ja" for Japanese.
+
+.SH FILES
+.HP
+.B $HOME/.config/ames/config
+Bash script evaluated at runtime. use to set config options.
+.HP
+.B /usr/share/ames/config
+Example config file.
+
+.SH REPORTING BUGS
+.PP
+Development takes place on
+.UR github
+.UE https://github.com/eshrh/ames
+
+Contributions are welcome!
