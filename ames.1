@@ -75,11 +75,11 @@ pactl list | grep -A2 '^Source #'
 
 .I Default: ""
 .HP
-.B AUDIO_BITRATE
+.B AUDIO_BIT-RATE
 
-Bitrate to encode recorded audio with. Lower bitrates correspond to
-worse audio quality but smaller filesizes. This should be a string
-that is valid to supply to ffmpeg's -ab option. A bitrate of around
+Bit-rate to encode recorded audio with. Lower bit-rates correspond to
+worse audio quality but smaller file-sizes. This should be a string
+that is valid to supply to ffmpeg's -ab option. A bit-rate of around
 20k (bits/s) should be sufficient for speech.
 
 .I Default: "64k"
@@ -101,7 +101,7 @@ will reduce the volume of recorded audio by 50%
 .B IMAGE_FORMAT
 Name of the extension of the format to which to re-encode screenshots.
 
-.I Defaut: "webp"
+.I Default: "webp"
 .HP
 .B IMAGE_WIDTH
 
@@ -119,7 +119,7 @@ dimension is calculated to preserve aspect ratio.
 
 .SH ENVIRONMENT
 Only one environment affects the behavior of this program, LANG. If this is set to
-any string beginning with "en" then notifications are sent in english.
+any string beginning with "en" then notifications are sent in English.
 
 Currently, the only other language supported is "ja" for Japanese.
 
