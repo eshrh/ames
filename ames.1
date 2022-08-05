@@ -52,17 +52,17 @@ The following options influence the behavior of \fBames\fP at runtime.
 .B AUDIO_FIELD
 Name of the Anki field in which to insert audio recordings.
 
-.I Default: "audio"
+.I Default: \[dq]audio\[dq]
 .TP
 .B SCREENSHOT_FIELD
 Name of the Anki field in which to insert screenshots.
 
-.I Default: "image"
+.I Default: \[dq]image\[dq]
 .TP
 .B SENTENCE_FIELD
 Name of the Anki field in which to insert clipboard text.
 
-.I Default: "Sentence"
+.I Default: \[dq]Sentence\[dq]
 .TP
 .B OUTPUT_MONITOR
 Name of the audio monitor to record from.
@@ -80,47 +80,47 @@ This should be a string that is valid to
 supply to \fBffmpeg\fP(1)'s \fB-ab\fP option.
 A bitrate of around 20k (bits/s) should be sufficient for speech.
 
-.I Default: "64k"
+.I Default: \[dq]64k\[dq]
 .TP
 .B AUDIO_FORMAT
 Extension of the audio format to encode recorded audio.
-For instance, "mp3" or "ogg" are also valid.
+For instance, \[dq]mp3\[dq] or \[dq]ogg\[dq] are also valid.
 
-.I Default: "opus"
+.I Default: \[dq]opus\[dq]
 .TP
 .B AUDIO_VOLUME
 Modify the volume of recorded audio.
 Set to 1 for no modification.
 A value of 0.5 will reduce the volume of recorded audio by 50%.
 
-.I Default: 1
+.I Default: \[dq]1\[dq]
 .TP
 .B IMAGE_FORMAT
 Extension of the image format to encode screenshots.
 
-.I Default: "webp"
+.I Default: \[dq]webp\[dq]
 .TP
 .B IMAGE_WIDTH
 Width in pixels to resize images to.
 If this is set to -2, then the dimension
 is calculated to preserve aspect ratio.
 
-.I Default: -2
+.I Default: \[dq]-2\[dq]
 .TP
 .B IMAGE_HEIGHT
 Height in pixels to resize images to.
 If this is set to -2, then the dimension
 is calculated to preserve aspect ratio.
 
-.I Default: 300
+.I Default: \[dq]300\[dq]
 
 .SH ENVIRONMENT
 
 .TP
 .B LANG
 If this is set to any string beginning with
-"en" then notifications are sent in English.
-Currently, the only other language supported is "ja" for Japanese.
+\[dq]en\[dq] then notifications are sent in English.
+Currently, the only other language supported is \[dq]ja\[dq] for Japanese.
 If your LANG does not match one of the above
 languages, then notifications are disabled.
 
