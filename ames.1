@@ -1,120 +1,113 @@
 .TH AMES 1 2022-08 "" "ames User Manual"
 
 .SH NAME
-ames \- anki media extractor script
+ames \- Anki media extractor script
 
 .SH SYNOPSIS
 .B ames
-[OPTIONS]
+[\fIOPTIONS\fP]
 
 .SH DESCRIPTION
 .PP
-Update Anki cards with desktop audio, screenshots,
-and clipboard sentences on GNU/Linux.
-Ames automates the process of adding information and media to your
-last Anki card, making immersion mining smoother and more efficient.
+Update Anki cards with desktop audio,
+screenshots, and clipboard text on GNU/Linux.
+\fBames\fP automates the process of adding information
+and media to your last (latest created) Anki card,
+making immersion mining smoother and more efficient.
 
 .SH OPTIONS
-.HP
+.TP
 .B -r
 Begin recording desktop audio.
-If called when already recording audio, then stop
-and export audio to your latest-created Anki card.
-.HP
+If called while already recording audio,
+then stop and export the recorded audio.
+.TP
 .B -s
 Prompt for an interactive screenshot selection.
-.HP
+.TP
 .B -a
-Repeat the previous screenshot selection.
-If there is no previous selection, default to -s.
-.HP
+Export the previous screenshot selection.
+If there is no previous selection, fallback to \fB-s\fP.
+.TP
 .B -w
-Screenshot the currently active window (requires xdotool).
-
-.HP
+Screenshot the currently active window.
+.TP
 .B -c
-Exports the currently copied text in the clipboard to the sentence field.
+Export copied text (contents of the CLIPBOARD selection).
 
 .SH CONFIGURATION
 .PP
-There are two ways to configure ames.
-The first is by editing the executable
-itself, which is a script written in bash.
-The second is using a config file at .config/ames/config.
-This config file must also be a valid bash script (so, no spaces around
-the variable declaration equals!) which is run when the script is called.
+There are two ways to configure \fBames\fP.
+The first is by editing the executable itself, available at
+\fI/usr/bin/ames\fP, which is a script written in \fBbash\fP(1).
+However, your changes will be lost when \fBames\fP is updated.
+The second is by making a configuration file at \fI~/.config/ames/config\fP.
+This file must also be a valid Bash script (so, no spaces around the equal
+sign in variable declarations!) and is ran when \fBames\fP is called.
 
-You can find an example config file at /usr/share/ames/config.
-The following options influence the behavior of ames at runtime.
+You can find an example configuration file at \fI/usr/share/ames/config\fP.
+The following options influence the behavior of \fBames\fP at runtime.
 
-.HP
+.TP
 .B AUDIO_FIELD
-
-Name of the anki field in which to insert audio recordings.
+Name of the Anki field in which to insert audio recordings.
 
 .I Default: "audio"
-.HP
+.TP
 .B SCREENSHOT_FIELD
-
-Name of the anki field in which to insert screenshots.
+Name of the Anki field in which to insert screenshots.
 
 .I Default: "image"
-.HP
+.TP
 .B SENTENCE_FIELD
-
-Name of the anki field in which to insert clipboard text.
+Name of the Anki field in which to insert clipboard text.
 
 .I Default: "Sentence"
-.HP
+.TP
 .B OUTPUT_MONITOR
-
 Name of the audio monitor to record from.
-If this is blank, then attempt to auto-select the correct monitor.
-You can find valid sources using pactl with
+If this is blank, then automatically attempt to select the correct monitor.
+You can find valid sources using \fBpactl\fP(1) with
 
 pactl list | grep -A2 '^Source #'
 
-.I Default: ""
-.HP
-.B AUDIO_BIT-RATE
-
-Bit-rate to encode recorded audio with.
-Lower bit-rates correspond to worse audio quality but smaller file-sizes.
-This should be a string that is valid to supply to ffmpeg's -ab option.
-A bit-rate of around 20k (bits/s) should be sufficient for speech.
+.I Default: \[dq]\[dq]
+.TP
+.B AUDIO_BITRATE
+Bitrate to encode recorded audio with.
+Lower bitrates correspond to smaller file sizes but worse audio quality.
+This should be a string that is valid to
+supply to \fBffmpeg\fP(1)'s \fB-ab\fP option.
+A bitrate of around 20k (bits/s) should be sufficient for speech.
 
 .I Default: "64k"
-.HP
+.TP
 .B AUDIO_FORMAT
-
-Name of the extension of the format to which to re-encode recorded audio.
+Extension of the audio format to encode recorded audio.
 For instance, "mp3" or "ogg" are also valid.
 
 .I Default: "opus"
-.HP
+.TP
 .B AUDIO_VOLUME
-
 Modify the volume of recorded audio.
 Set to 1 for no modification.
-0.5 will reduce the volume of recorded audio by 50%
+A value of 0.5 will reduce the volume of recorded audio by 50%.
 
 .I Default: 1
-.HP
+.TP
 .B IMAGE_FORMAT
-Name of the extension of the format to which to re-encode screenshots.
+Extension of the image format to encode screenshots.
 
 .I Default: "webp"
-.HP
+.TP
 .B IMAGE_WIDTH
-
 Width in pixels to resize images to.
 If this is set to -2, then the dimension
 is calculated to preserve aspect ratio.
 
 .I Default: -2
-.HP
+.TP
 .B IMAGE_HEIGHT
-
 Height in pixels to resize images to.
 If this is set to -2, then the dimension
 is calculated to preserve aspect ratio.
@@ -122,24 +115,30 @@ is calculated to preserve aspect ratio.
 .I Default: 300
 
 .SH ENVIRONMENT
-Only one environment affects the behavior of this program, LANG.
+
+.TP
+.B LANG
 If this is set to any string beginning with
 "en" then notifications are sent in English.
-
 Currently, the only other language supported is "ja" for Japanese.
+If your LANG does not match one of the above
+languages, then notifications are disabled.
 
 .SH FILES
-.HP
-.B $HOME/.config/ames/config
-Bash script evaluated at runtime. use to set config options.
-.HP
-.B /usr/share/ames/config
-Example config file.
+.TP
+.I /usr/bin/ames
+Source executable file of this Bash script.
+.TP
+.I /usr/share/ames/config
+Example configuration file.
+.TP
+.I ~/.config/ames/config
+Bash script used to set configuration options at runtime.
 
 .SH REPORTING BUGS
 .PP
 Development takes place on
-.UR github
-.UE https://github.com/eshrh/ames
+.UR \fIhttps://github.com/eshrh/ames\fP
+.UE
 
 Contributions are welcome!
