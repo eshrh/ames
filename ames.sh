@@ -296,8 +296,8 @@ record() {
     else
         local -r audioFile="$(sed -n "1p" "$recordingToggle")"
         local -r pid="$(sed -n "2p" "$recordingToggle")"
-        local -r start="$(sed -n "3p" "$recordingToggle")"
-        local -r duration="$(($(current_time) - $start))"
+        local -r start_time="$(sed -n "3p" "$recordingToggle")"
+        local -r duration="$(($(current_time) - start_time))"
 
         rm "$recordingToggle"
         kill -15 "$pid"
