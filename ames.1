@@ -37,16 +37,26 @@ Export copied text (contents of the CLIPBOARD selection).
 
 .SH CONFIGURATION
 .PP
-There are two ways to configure \fBames\fP.
+There are three ways to configure \fBames\fP.
 The first is by editing the executable itself, available at
 \fI/usr/bin/ames\fP, which is a script written in \fBbash\fP(1).
 However, your changes will be lost when \fBames\fP is updated.
+.PP
 The second is by making a configuration file at \fI~/.config/ames/config\fP.
 This file must also be a valid Bash script (so, no spaces around the equal
 sign in variable declarations!) and is ran when \fBames\fP is called.
+.PP
+The third is by using the post configuration hook at
+\fI~/.config/ames/post_config.sh\fP which is another Bash script.
+This file is read after all functions have been defined at runtime.
+This means that you can change any behavior of ames by redefining a
+function in the post config script.
+See the source code for function names and some caveats for redefined
+functions to work.
 
-You can find an example configuration file at \fI/usr/share/ames/config\fP.
-The following options influence the behavior of \fBames\fP at runtime.
+You can find an example (pre-) configuration file at \fI/usr/share/ames/config\fP.
+The following options influence the behavior of \fBames\fP before
+function definition.
 
 .TP
 .B AUDIO_FIELD
@@ -113,6 +123,11 @@ If this is set to -2, then the dimension
 is calculated to preserve aspect ratio.
 
 .I Default: \[dq]300\[dq]
+.TP
+.B POST_CONFIG_FILE_PATH
+Path to post configuration file, run after function definitions
+
+.I Default: \[dq]~/.config/ames/post_config.sh\[dq]
 
 .SH ENVIRONMENT
 
@@ -134,6 +149,9 @@ Example configuration file.
 .TP
 .I ~/.config/ames/config
 Bash script used to set configuration options at runtime.
+.TP
+.I ~/.config/ames/post_config.sh
+Bash script used to redefine functions at runtime.
 
 .SH REPORTING BUGS
 .PP

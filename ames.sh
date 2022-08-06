@@ -29,6 +29,7 @@ IMAGE_WIDTH="-2"
 IMAGE_HEIGHT="300"
 
 CONFIG_FILE_PATH="$HOME/.config/ames/config"
+POST_CONFIG_FILE_PATH="$HOME/.config/ames/post_config.sh"
 
 if [[ -f "$CONFIG_FILE_PATH" ]]; then
     # shellcheck disable=SC1090
@@ -388,6 +389,11 @@ clipboard() {
                     "例文付けました"
     fi
 }
+
+if [[ -f "$POST_CONFIG_FILE_PATH" ]]; then
+    # shellcheck disable=SC1090
+    source "$POST_CONFIG_FILE_PATH"
+fi
 
 if [[ -z ${1-} ]]; then
     usage
