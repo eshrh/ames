@@ -248,6 +248,11 @@ screenshot_window() {
     notify_screenshot_add
 }
 
+current_time() {
+    # current time as an integer number of milliseconds since the epoch
+    echo "$(date '+%s')$(date '+%N' | awk '{ print substr($1, 0, 3) }')"
+}
+
 record() {
     # this section is a heavily modified version of the linux audio
     # script written by salamander on qm's animecards.
@@ -278,6 +283,8 @@ record() {
 
             echo "$!" >> "$recordingToggle"
 
+        current_time >> "$recordingToggle"
+
         if [[ "$LANG" == en* ]]; then
             notify-send --hint=int:transient:1 -t 500 -u normal \
                         "Recording started..."
@@ -289,6 +296,8 @@ record() {
     else
         local -r audioFile="$(sed -n "1p" "$recordingToggle")"
         local -r pid="$(sed -n "2p" "$recordingToggle")"
+        local -r start="$(sed -n "3p" "$recordingToggle")"
+        local -r duration="$(($(current_time) - $start))"
 
         rm "$recordingToggle"
         kill -15 "$pid"
@@ -296,6 +305,17 @@ record() {
         while [ "$(du "$audioFile" | awk '{ print $1 }')" -eq 0 ]; do
             true
         done
+
+        local -r audioBackup="/tmp/ffmpeg-recording-audio-backup.$AUDIO_FORMAT"
+        cp "$audioFile" "$audioBackup"
+        ffmpeg -nostdin \
+            -y \
+            -loglevel error \
+            -i "$audioBackup" \
+            -c copy \
+            -to "${duration}ms" \
+            "$audioFile" 1>/dev/null
+
         store_file "${audioFile}"
         update_sound "$(basename -- "$audioFile")"
 
