@@ -28,7 +28,7 @@ IMAGE_FORMAT="webp"
 IMAGE_WIDTH="-2"
 IMAGE_HEIGHT="300"
 
-# the config is sourced at the bottom of this file to overwrite functions
+# the config is sourced at the bottom of this file to overwrite functions.
 CONFIG_FILE_PATH="$HOME/.config/ames/config"
 
 usage() {
@@ -52,7 +52,7 @@ notify_screenshot_add() {
 }
 
 maxn() {
-    # compute the max element of a list
+    # compute the max element of a list.
     tr -d ' ' | tr ',' '\n' | awk '
     BEGIN {
         max = 0
@@ -69,8 +69,8 @@ maxn() {
 }
 
 get_last_id() {
-    # get the id of the last card added to anki
-    # result is stored in the global variable newest_card_id
+    # get the id of the last card added to Anki.
+    # result is stored in the global variable newest_card_id.
     local new_card_request='{
         "action": "findNotes",
         "version": 6,
@@ -86,7 +86,7 @@ get_last_id() {
 }
 
 store_file() {
-    # store a media file
+    # store a media file.
     local -r dir=${1:?}
     local -r name=$(basename -- "$dir")
     local request='{
@@ -103,7 +103,7 @@ store_file() {
 }
 
 gui_browse() {
-    # open the gui card browser and point the modified card
+    # open the gui card browser and point the modified card.
     local -r query=${1:-nid:1}
     local request='{
         "action": "guiBrowse",
@@ -121,14 +121,15 @@ ankiconnect_request() {
 }
 
 safe_request() {
-    # only send requests after opening the gui browser
+    # only send requests after opening the gui browser.
     gui_browse "nid:1"
     ankiconnect_request "${1:?}"
     gui_browse "nid:${newest_card_id:?Newest card is not known.}"
 }
 
 update_sentence() {
-    # update card with sentence ($1)
+    # update card with sentence.
+    # $1 is the sentence.
     get_last_id
     local update_request='{
         "action": "updateNoteFields",
@@ -150,7 +151,8 @@ update_sentence() {
 }
 
 update_img() {
-    # update card with image, given by the path in $1
+    # update card with image.
+    # $1 is the path to the image.
     get_last_id
     local update_request='{
         "action": "updateNoteFields",
@@ -170,7 +172,8 @@ update_img() {
 }
 
 update_sound() {
-    # update card with sound, given by the path to an audio file in $1
+    # update card with sound, given by an audio file.
+    # $1 is the path to the audio file.
     get_last_id
     local update_request='{
         "action": "updateNoteFields",
@@ -192,7 +195,7 @@ update_sound() {
 }
 
 encode_img() {
-    # use ffmpeg to encode an image to some desired format
+    # use ffmpeg to encode an image to some desired format.
     local -r source_path="$1"
     local -r dest_path="$2"
     ffmpeg -nostdin \
@@ -204,7 +207,7 @@ encode_img() {
 }
 
 get_selection() {
-    # get a region of the screen for future screenshotting
+    # get a region of the screen for future screenshotting.
     slop
 }
 
@@ -227,8 +230,8 @@ take_screenshot_window() {
 }
 
 screenshot() {
-    # take a screenshot by prompting the user for a selection and then
-    # add this image to the last anki card
+    # take a screenshot by prompting the user for a selection
+    # and then add this image to the last Anki card.
     local -r geom=$(get_selection)
     local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
     local -r base_path=$(basename -- "$path" | cut -d "." -f-2)
@@ -246,8 +249,8 @@ screenshot() {
 
 again() {
     # if screenshot() has been called, then repeat take another screenshot
-    # with the same dimensions as last time and add to the last anki card.
-    # otherwise, cal screenshot()
+    # with the same dimensions as last time and add to the last Anki card.
+    # otherwise, call screenshot().
     local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
     local -r base_path=$(basename -- "$path" | cut -d "." -f-2)
     local -r converted_path="/tmp/$base_path.$IMAGE_FORMAT"
@@ -266,7 +269,7 @@ again() {
 }
 
 screenshot_window() {
-    # take a screenshot of the active window and add to the last anki card.
+    # take a screenshot of the active window and add to the last Anki card.
     local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
     local -r base_path=$(basename -- "$path" | cut -d "." -f-2)
     local -r converted_path="/tmp/$base_path.$IMAGE_FORMAT"
@@ -279,17 +282,18 @@ screenshot_window() {
 }
 
 current_time() {
-    # current time as an integer number of milliseconds since the epoch
+    # current time as an integer number of milliseconds since the epoch.
     echo "$(date '+%s')$(date '+%N' | awk '{ print substr($1, 0, 3) }')"
 }
 
 record_function() {
-    # function to record desktop audio. $1 is the name of the output
-    # monitor, $2 is the output file name.
+    # function to record desktop audio.
+    # $1 is the name of the output monitor.
+    # $2 is the output file name.
 
-    # the last function called here MUST be the call to ffmpeg or some
-    # other program that does recording. When -r is called again, the
-    # pid of the last function call is killed.
+    # the last function called here MUST be the call to
+    # ffmpeg or some other program that does recording.
+    # when -r is called again, the pid of the last function call is killed.
     local -r output="$1"
     local -r audio_file="$2"
     ffmpeg -nostdin \
@@ -333,7 +337,7 @@ record_start() {
 }
 
 record_end() {
-    # end recording
+    # end recording.
     local -r audio_file="$(sed -n "1p" "$recording_toggle")"
     local -r pid="$(sed -n "2p" "$recording_toggle")"
     local -r start_time="$(sed -n "3p" "$recording_toggle")"
@@ -383,7 +387,7 @@ record() {
 }
 
 copied_text() {
-    # get the contents of the clipboard
+    # get the contents of the clipboard.
     if command -v xclip &> /dev/null
     then
         xclip -o
