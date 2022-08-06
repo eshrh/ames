@@ -364,20 +364,23 @@ record() {
     fi
 }
 
-clipboard() {
-    # get the current clipboard, and add this text to the last anki
-    # card.
+copied_text() {
+    # get the contents of the clipboard
     if command -v xclip &> /dev/null
     then
-        local -r sentence=$(xclip -o)
+        xclip -o
     elif command -v xsel &> /dev/null
     then
-        local -r sentence=$(xsel -b)
+        xsel -b
     else
         echo "Couldn't find xclip or xsel." >&2
         exit
     fi
+}
 
+clipboard() {
+    # get the current clipboard, and add this text to the last Anki card.
+    local -r sentence=$(copied_text)
     update_sentence "${sentence}"
 
     if [[ "$LANG" == en* ]]; then
