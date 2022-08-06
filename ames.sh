@@ -273,7 +273,7 @@ record() {
             -i "$output" \
             -ac 2 \
             -af "volume=${AUDIO_VOLUME},silenceremove=1:0:-50dB" \
-            -ab $AUDIO_BITRATE \
+            -ab "$AUDIO_BITRATE" \
             "$audioFile" 1>/dev/null &
 
             echo "$!" >> "$recordingToggle"
@@ -291,10 +291,10 @@ record() {
         local -r pid="$(sed -n "2p" "$recordingToggle")"
 
         rm "$recordingToggle"
-            kill -15 "$pid"
+        kill -15 "$pid"
 
         while [ "$(du "$audioFile" | awk '{ print $1 }')" -eq 0 ]; do
-                true
+            true
         done
         store_file "${audioFile}"
         update_sound "$(basename -- "$audioFile")"
