@@ -208,15 +208,38 @@ encode_img() {
         "$dest_path"
 }
 
+get_selection() {
+    # get a region of the screen for future screenshotting
+    slop
+}
+
+take_screenshot_region() {
+    # function to take a screenshot of a given screen region.
+    # $1 is the geometry of the region from get_selection().
+    # $2 is the output file name.
+    local -r geom="$1"
+    local -r path="$2"
+    maim --hidecursor "$path" -g "$geom"
+}
+
+take_screenshot_window() {
+    # function to take a screenshot of a given window.
+    # $1 is the geometry of the region from get_selection().
+    # $2 is the output file name.
+    local -r window="$1"
+    local -r path="$2"
+    maim --hidecursor "$path" -i "$window"
+}
+
 screenshot() {
     # take a screenshot by prompting the user for a selection and then
     # add this image to the last anki card
-    local -r geom=$(slop)
+    local -r geom=$(get_selection)
     local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
     local -r base_path=$(basename -- "$path" | cut -d "." -f-2)
     local -r converted_path="/tmp/$base_path.$IMAGE_FORMAT"
 
-    maim --hidecursor "$path" -g "$geom"
+    take_screenshot_region "$geom" "$path"
     encode_img "$path" "$converted_path"
 
     rm "$path"
@@ -235,7 +258,7 @@ again() {
     local -r converted_path="/tmp/$base_path.$IMAGE_FORMAT"
 
     if [[ -f /tmp/previous-maim-screenshot ]]; then
-        maim --hidecursor "$path" -g "$(cat /tmp/previous-maim-screenshot)"
+        take_screenshot_region "$(cat /tmp/previous-maim-screenshot)" "$path"
         encode_img "$path" "$converted_path"
         rm "$path"
         store_file "$converted_path"
@@ -252,7 +275,7 @@ screenshot_window() {
     local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
     local -r base_path=$(basename -- "$path" | cut -d "." -f-2)
     local -r converted_path="/tmp/$base_path.$IMAGE_FORMAT"
-    maim --hidecursor "$path" -i "$(xdotool getactivewindow)"
+    take_screenshot_window "$(xdotool getactivewindow)" "$path"
     encode_img "$path" "$converted_path"
     rm "$path"
     store_file "$converted_path"
