@@ -28,13 +28,8 @@ IMAGE_FORMAT="webp"
 IMAGE_WIDTH="-2"
 IMAGE_HEIGHT="300"
 
+# the config is sourced at the bottom of this file to overwrite functions
 CONFIG_FILE_PATH="$HOME/.config/ames/config"
-POST_CONFIG_FILE_PATH="$HOME/.config/ames/post_config.sh"
-
-if [[ -f "$CONFIG_FILE_PATH" ]]; then
-    # shellcheck disable=SC1090
-    source "$CONFIG_FILE_PATH"
-fi
 
 usage() {
     # display help
@@ -416,9 +411,9 @@ clipboard() {
     fi
 }
 
-if [[ -f "$POST_CONFIG_FILE_PATH" ]]; then
+if [[ -f "$CONFIG_FILE_PATH" ]]; then
     # shellcheck disable=SC1090
-    source "$POST_CONFIG_FILE_PATH"
+    source "$CONFIG_FILE_PATH"
 fi
 
 if [[ -z ${1-} ]]; then
