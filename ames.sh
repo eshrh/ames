@@ -258,12 +258,10 @@ take_screenshot_region() {
 }
 
 take_screenshot_window() {
-    # function to take a screenshot of a given window.
-    # $1 is the geometry of the region from get_selection().
-    # $2 is the output file name.
-    local -r window="$1"
-    local -r path="$2"
-    maim --hidecursor "$path" -i "$window"
+    # function to take a screenshot of the current window.
+    # $1 is the output file name.
+    local -r path="$1"
+    maim --hidecursor "$path" -i "$(xdotool getactivewindow)"
 }
 
 screenshot() {
@@ -310,7 +308,7 @@ screenshot_window() {
     local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
     local -r base_path=$(basename -- "$path" | cut -d "." -f-2)
     local -r converted_path="/tmp/$base_path.$IMAGE_FORMAT"
-    take_screenshot_window "$(xdotool getactivewindow)" "$path"
+    take_screenshot_window "$path"
     encode_img "$path" "$converted_path"
     rm "$path"
     store_file "$converted_path"
