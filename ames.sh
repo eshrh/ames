@@ -128,15 +128,15 @@ get_last_id() {
     }'
     local new_card_response list
 
-    new_card_response=$(ankiconnect_request "$new_card_request")
-    list=$(echo "$new_card_response" | cut -d "[" -f2 | cut -d "]" -f1)
-    newest_card_id=$(echo "$list" | maxn)
+    new_card_response="$(ankiconnect_request "$new_card_request")"
+    list="$(echo "$new_card_response" | cut -d "[" -f2 | cut -d "]" -f1)"
+    newest_card_id="$(echo "$list" | maxn)"
 }
 
 store_file() {
     # store a media file.
-    local -r dir=${1:?}
-    local -r name=$(basename -- "$dir")
+    local -r dir="${1:?}"
+    local -r name="$(basename -- "$dir")"
     local request='{
         "action": "storeMediaFile",
         "version": 6,
@@ -145,14 +145,14 @@ store_file() {
             "path": "<dir>"
         }
     }'
-    request=${request//<name>/$name}
-    request=${request/<dir>/$dir}
+    request="${request//<name>/$name}"
+    request="${request/<dir>/$dir}"
     ankiconnect_request "$request" >>/dev/null
 }
 
 gui_browse() {
     # open the gui card browser and point the modified card.
-    local -r query=${1:-nid:1}
+    local -r query="${1:-nid:1}"
     local request='{
         "action": "guiBrowse",
         "version": 6,
@@ -160,7 +160,7 @@ gui_browse() {
             "query": "<QUERY>"
         }
     }'
-    request=${request/<QUERY>/$query}
+    request="${request/<QUERY>/$query}"
     ankiconnect_request "$request"
 }
 
@@ -190,10 +190,10 @@ update_sentence() {
         }
     }'
 
-    update_request=${update_request/<id>/$newest_card_id}
-    update_request=${update_request/<SENTENCE_FIELD>/$SENTENCE_FIELD}
+    update_request="${update_request/<id>/$newest_card_id}"
+    update_request="${update_request/<SENTENCE_FIELD>/$SENTENCE_FIELD}"
     local -r sentence="$(escape "$1")"
-    update_request=${update_request/<sentence>/$sentence}
+    update_request="${update_request/<sentence>/$sentence}"
     safe_request "$update_request"
 }
 
@@ -211,9 +211,9 @@ update_img() {
             }
         }
     }'
-    update_request=${update_request/<id>/$newest_card_id}
-    update_request=${update_request/<SCREENSHOT_FIELD>/$SCREENSHOT_FIELD}
-    update_request=${update_request/<path>/$1}
+    update_request="${update_request/<id>/$newest_card_id}"
+    update_request="${update_request/<SCREENSHOT_FIELD>/$SCREENSHOT_FIELD}"
+    update_request="${update_request/<path>/$1}"
 
     safe_request "$update_request"
 }
@@ -234,9 +234,9 @@ update_sound() {
             }
         }
     }'
-    update_request=${update_request/<id>/$newest_card_id}
-    update_request=${update_request/<AUDIO_FIELD>/$AUDIO_FIELD}
-    update_request=${update_request/<path>/$1}
+    update_request="${update_request/<id>/$newest_card_id}"
+    update_request="${update_request/<AUDIO_FIELD>/$AUDIO_FIELD}"
+    update_request="${update_request/<path>/$1}"
 
     safe_request "$update_request"
 }
@@ -277,9 +277,9 @@ take_screenshot_window() {
 screenshot() {
     # take a screenshot by prompting the user for a selection
     # and then add this image to the last Anki card.
-    local -r geom=$(get_selection)
-    local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
-    local -r base_path=$(basename -- "$path" | cut -d "." -f-2)
+    local -r geom="$(get_selection)"
+    local -r path="$(mktemp /tmp/maim-screenshot.XXXXXX.png)"
+    local -r base_path="$(basename -- "$path" | cut -d "." -f-2)"
     local -r converted_path="/tmp/$base_path.$IMAGE_FORMAT"
 
     take_screenshot_region "$geom" "$path"
@@ -296,8 +296,8 @@ again() {
     # if screenshot() has been called, then repeat take another screenshot
     # with the same dimensions as last time and add to the last Anki card.
     # otherwise, call screenshot().
-    local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
-    local -r base_path=$(basename -- "$path" | cut -d "." -f-2)
+    local -r path="$(mktemp /tmp/maim-screenshot.XXXXXX.png)"
+    local -r base_path="$(basename -- "$path" | cut -d "." -f-2)"
     local -r converted_path="/tmp/$base_path.$IMAGE_FORMAT"
 
     if [[ -f /tmp/previous-maim-screenshot ]]; then
@@ -315,8 +315,8 @@ again() {
 
 screenshot_window() {
     # take a screenshot of the active window and add to the last Anki card.
-    local -r path=$(mktemp /tmp/maim-screenshot.XXXXXX.png)
-    local -r base_path=$(basename -- "$path" | cut -d "." -f-2)
+    local -r path="$(mktemp /tmp/maim-screenshot.XXXXXX.png)"
+    local -r base_path="$(basename -- "$path" | cut -d "." -f-2)"
     local -r converted_path="/tmp/$base_path.$IMAGE_FORMAT"
     take_screenshot_window "$path"
     encode_img "$path" "$converted_path"
@@ -354,14 +354,14 @@ record_function() {
 
 record_start() {
     # begin recording audio.
-    local -r audio_file=$(mktemp \
-                              "/tmp/ffmpeg-recording.XXXXXX.$AUDIO_FORMAT")
+    local -r audio_file="$(mktemp \
+                               "/tmp/ffmpeg-recording.XXXXXX.$AUDIO_FORMAT")"
     echo "$audio_file" >"$recording_toggle"
 
     if [ "$OUTPUT_MONITOR" == "" ]; then
-        local -r output=$(pactl info \
-                              | grep 'Default Sink' \
-                              | awk '{print $NF ".monitor"}')
+        local -r output="$(pactl info \
+                               | grep 'Default Sink' \
+                               | awk '{print $NF ".monitor"}')"
     else
         local -r output="$OUTPUT_MONITOR"
     fi
@@ -443,7 +443,7 @@ if [[ -f "$CONFIG_FILE_PATH" ]]; then
     source "$CONFIG_FILE_PATH"
 fi
 
-if [[ -z ${1-} ]]; then
+if [[ -z "${1-}" ]]; then
     usage
     exit 1
 fi
