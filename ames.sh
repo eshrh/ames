@@ -105,6 +105,17 @@ maxn() {
     '
 }
 
+escape() {
+    # serialize an arbitrary string for use in JSON.
+    # $1 is the string to serialize.
+    local escaped="${1//\\/\\\\}"
+    escaped="${escaped//\"/\\\"}"
+    local -r newline="
+"
+    escaped="${escaped//$newline/\\n}"
+    echo -n "$escaped"
+}
+
 get_last_id() {
     # get the id of the last card added to Anki.
     # result is stored in the global variable newest_card_id.
@@ -181,9 +192,8 @@ update_sentence() {
 
     update_request=${update_request/<id>/$newest_card_id}
     update_request=${update_request/<SENTENCE_FIELD>/$SENTENCE_FIELD}
-    sentence_esc=${1//\\/\\\\}
-    sentence_esc=${sentence_esc//\"/\\\"}
-    update_request=${update_request/<sentence>/$sentence_esc}
+    local -r sentence="$(escape "$1")"
+    update_request=${update_request/<sentence>/$sentence}
     safe_request "$update_request"
 }
 
