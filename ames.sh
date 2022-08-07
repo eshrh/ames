@@ -23,6 +23,7 @@ OUTPUT_MONITOR=""
 AUDIO_BITRATE="64k"
 AUDIO_FORMAT="opus"
 AUDIO_VOLUME="1"
+MINIMUM_DURATION="0"
 IMAGE_FORMAT="webp"
 # -2 to calculate dimension while preserving aspect ratio.
 IMAGE_WIDTH="-2"
@@ -380,6 +381,10 @@ record_end() {
     local -r pid="$(sed -n "2p" "$recording_toggle")"
     local -r start_time="$(sed -n "3p" "$recording_toggle")"
     local -r duration="$(($(current_time) - start_time))"
+
+    if [ "$duration" -le "$MINIMUM_DURATION" ]; then
+        sleep "$((MINIMUM_DURATION - duration))e-3"
+    fi
 
     rm "$recording_toggle"
     kill -15 "$pid"

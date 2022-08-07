@@ -96,6 +96,17 @@ A value of 0.5 will reduce the volume of recorded audio by 50%.
 
 .I Default: \[dq]1\[dq]
 .TP
+.B MINIMUM_DURATION
+The minimum duration to record for, as an integer number of milliseconds.
+If the signal to stop occurs before this time is reached,
+continue recording until the minimum duration is met.
+If the signal to stop occurs after, this option has no effect.
+This option does not affect the actual length of the recorded
+audio as the recording is trimmed in post-processing;
+instead, it is intended to work around ffmpeg's limitations.
+
+.I Default: \[dq]0\[dq]
+.TP
 .B IMAGE_FORMAT
 Extension of the image format to encode screenshots.
 
