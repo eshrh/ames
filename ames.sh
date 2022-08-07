@@ -119,7 +119,7 @@ escape() {
 get_last_id() {
     # get the id of the last card added to Anki.
     # result is stored in the global variable newest_card_id.
-    local new_card_request='{
+    local -r new_card_request='{
         "action": "findNotes",
         "version": 6,
         "params": {
