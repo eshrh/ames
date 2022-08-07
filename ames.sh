@@ -410,7 +410,7 @@ copied_text() {
     # get the contents of the clipboard.
     if command -v xclip &> /dev/null
     then
-        xclip -o
+        xclip -o -selection clipboard
     elif command -v xsel &> /dev/null
     then
         xsel -b
@@ -422,7 +422,7 @@ copied_text() {
 
 clipboard() {
     # get the current clipboard, and add this text to the last Anki card.
-    local -r sentence=$(copied_text)
+    local -r sentence="$(copied_text)"
     update_sentence "${sentence}"
 
     notify_sentence_add
