@@ -61,12 +61,10 @@ mkdir -p ~/.config/ames/ && cp /usr/share/ames/config ~/.config/ames/config
 + You may also define config options in `~/.config/ames/config`. These must
   be Bash variable declarations, with no spaces like in the script or in the
   [sample configuration](https://github.com/eshrh/ames/blob/master/config).
-+ Another powerful option to configure `ames` is to create a post-config file.
-  By default, the file at `~/.config/ames/post_config.sh` is read
-  after all functions have been defined at runtime. This means that
-  you can change any behavior of ames by redefining a function in
-  the post config script. See the source code for function names and
-  some caveats for redefined functions to work.
++ The aforementioned file is read after all functions have been
+  defined at runtime. This means that you can change any behavior of
+  ames by redefining a function in Bash. See the source code for
+  function names and some caveats for redefined functions to work.
 + ames tries to pick the right output monitor automatically. If this doesn't
   work for you, you can first list monitor sinks with `pactl list | grep -A2
   '^Source #'` and then redefine the `OUTPUT_MONITOR` variable with the name
