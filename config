@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2034
 AUDIO_FIELD="audio"
 SCREENSHOT_FIELD="image"
 SENTENCE_FIELD="Sentence"
