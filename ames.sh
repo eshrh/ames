@@ -41,6 +41,7 @@ usage() {
 }
 
 notify_screenshot_add() {
+    # notify the user that a screenshot was added.
     if [[ "$LANG" == en* ]]; then
         notify-send --hint=int:transient:1 -t 500 -u normal \
                     "Screenshot added"
@@ -48,6 +49,42 @@ notify_screenshot_add() {
     if [[ "$LANG" == ja* ]]; then
         notify-send --hint=int:transient:1 -t 500 -u normal \
                     "スクリーンショット付けました"
+    fi
+}
+
+notify_record_start() {
+    # notify the user that a recording started.
+    if [[ "$LANG" == en* ]]; then
+        notify-send --hint=int:transient:1 -t 500 -u normal \
+                    "Recording started..."
+    fi
+    if [[ "$LANG" == ja* ]]; then
+        notify-send --hint=int:transient:1 -t 500 -u normal \
+                    "録音しています..."
+    fi
+}
+
+notify_record_stop() {
+    # notify the user that a recording stopped.
+    if [[ "$LANG" == en* ]]; then
+        notify-send --hint=int:transient:1 -t 500 -u normal \
+                    "Recording added"
+    fi
+    if [[ "$LANG" == ja* ]]; then
+        notify-send --hint=int:transient:1 -t 500 -u normal \
+                    "録音付けました"
+    fi
+}
+
+notify_sentence_add() {
+    # notify the user that a sentence was added.
+    if [[ "$LANG" == en* ]]; then
+        notify-send --hint=int:transient:1 -t 500 -u normal \
+                    "Sentence added"
+    fi
+    if [[ "$LANG" == ja* ]]; then
+        notify-send --hint=int:transient:1 -t 500 -u normal \
+                    "例文付けました"
     fi
 }
 
@@ -326,14 +363,7 @@ record_start() {
 
     current_time >> "$recording_toggle"
 
-    if [[ "$LANG" == en* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal \
-                    "Recording started..."
-    fi
-    if [[ "$LANG" == ja* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal \
-                    "録音しています..."
-    fi
+    notify_record_start
 }
 
 record_end() {
@@ -363,15 +393,7 @@ record_end() {
     store_file "${audio_file}"
     update_sound "$(basename -- "$audio_file")"
 
-    if [[ "$LANG" == en* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal \
-                    "Recording added"
-    fi
-    if [[ "$LANG" == ja* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal \
-                    "録音付けました"
-    fi
-
+    notify_record_stop
 }
 
 record() {
@@ -405,14 +427,7 @@ clipboard() {
     local -r sentence=$(copied_text)
     update_sentence "${sentence}"
 
-    if [[ "$LANG" == en* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal \
-                    "Sentence added"
-    fi
-    if [[ "$LANG" == ja* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal \
-                    "例文付けました"
-    fi
+    notify_sentence_add
 }
 
 if [[ -f "$CONFIG_FILE_PATH" ]]; then
