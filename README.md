@@ -3,7 +3,7 @@
 Anki media extractor script (ames): Update Anki cards with
 desktop audio, screenshots, and clipboard sentences on GNU/Linux.
 
-Ames automates the process of adding information and media to your latest
+ames automates the process of adding information and media to your latest
 added Anki card, making immersion mining smoother and more efficient.
 
 ## Requirements
@@ -26,8 +26,7 @@ added Anki card, making immersion mining smoother and more efficient.
 
 ### General
 
-1. Download the [ames.sh](https://github.com/eshrh/ames/blob/master/ames.sh)
-   script somewhere safe.
+1. Download the [ames.sh](./ames.sh) script somewhere safe.
 2. Edit the script and change the first two lines to match
    the names of your Anki model image and audio fields.
 3. Bind the following commands to any key
@@ -58,9 +57,9 @@ mkdir -p ~/.config/ames/ && cp /usr/share/ames/config ~/.config/ames/config
 
 ## Notes
 
-+ You may also define config options in `~/.config/ames/config`. These must
-  be Bash variable declarations, with no spaces like in the script or in the
-  [sample configuration](https://github.com/eshrh/ames/blob/master/config).
++ You may also define config options in `~/.config/ames/config`.
+  These must be Bash variable declarations, with no spaces like
+  in the script or in the [sample configuration](./config).
 + The aforementioned file is read after all functions have been
   defined at runtime. This means that you can change any behavior of
   ames by redefining a function in Bash. See the source code for
