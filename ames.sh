@@ -349,7 +349,7 @@ record_function() {
         -ac 2 \
         -af "volume=${AUDIO_VOLUME},silenceremove=1:0:-50dB" \
         -ab "$AUDIO_BITRATE" \
-        "$audio_file" 1>/dev/null &
+        "$audio_file" 1> /dev/null &
 }
 
 record_start() {
@@ -396,7 +396,7 @@ record_end() {
            -i "$audio_backup" \
            -c copy \
            -to "${duration}ms" \
-           "$audio_file" 1>/dev/null
+           "$audio_file" 1> /dev/null
 
     store_file "${audio_file}"
     update_sound "$(basename -- "$audio_file")"
