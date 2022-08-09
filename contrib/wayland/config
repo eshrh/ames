@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+get_selection() {
+    # get a region of the screen for future screenshotting.
+    slurp
+}
+
+take_screenshot_region() {
+    # function to take a screenshot of a given screen region.
+    # $1 is the geometry of the region from get_selection().
+    # $2 is the output file name.
+    local -r geom="$1"
+    local -r path="$2"
+    grim "$path" -g "$geom"
+}
+
+take_screenshot_window() {
+    # function to take a screenshot of the current window.
+    # $1 is the output file name.
+    local -r path="$1"
+    swaymsg -t get_tree | jq -r '.. | select(.pid? and .visible?) | .rect | "\(.x),\(.y) \(.width)x\(.height)"' | grim -g - "$path"
+}
+
+copied_text() {
+    # get the contents of the clipboard.
+    wl-paste
+}
+
