@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+import argparse
+import crecord
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="record audio")
+    parser.add_argument("path", help="file path")
+    parser.add_argument("-d", "--device", help="device name")
+    parser.add_argument("-c", "--channels", type=int, default=2,
+                        help="number of audio channels")
+    parser.add_argument("-s", "--samplerate", type=float, default=48000,
+                        help="audio sample rate (pass 0 for default rate)")
+    parser.add_argument("-l", "--latency", default="high",
+                        help="audio latency")
+    parser.add_argument("-b", "--bitrate", default="64k",
+                        help="audio bitrate")
+
+    args = parser.parse_args()
+
+    # device can either be string identifier or index
+    try:
+        device = int(args.device)
+    except (ValueError, TypeError):
+        device = args.device
+        # use default sounddevice selection
+        if device is not None and \
+                (len(device) == 0 or device.lower() == "none"):
+            device = None
+
+    # begin recording and let Cython handle interrupts
+    try:
+        crecord.record(
+            args.samplerate,
+            device,
+            args.channels,
+            args.latency,
+        )
+    except KeyboardInterrupt:
+        samplerate, data = crecord.get_recording()
+
+        # load data into pydub for exporting
+        import pydub
+        recording = pydub.AudioSegment(
+            data=data,
+            sample_width=4,
+            frame_rate=samplerate,
+            channels=args.channels,
+        )
+        # write to file (uses ffmpeg)
+        recording.export(
+            args.path,
+            format=args.path.split(".")[-1],
+            bitrate=args.bitrate,
+        )
+
