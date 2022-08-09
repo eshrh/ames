@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+import argparse, time, sys, signal, queue
+import numpy as np
+import sounddevice as sd
+import pydub
+
+RECORDING_START_TIME = None
+q = queue.SimpleQueue()
+blocks = []
+
+def cleanup(signum: int, frame) -> None:
+    """ Exit hook to stop recording. """
+    if RECORDING_START_TIME is None:
+        sys.exit(0)
+
+    stream.close()
+    data = np.vstack(blocks).tobytes()
+    # load data into pydub for exporting
+    recording = pydub.AudioSegment(
+        data=data,
+        sample_width=4,
+        frame_rate=args.samplerate,
+        channels=args.channels,
+    )
+    # write to file (uses ffmpeg)
+    recording.export(
+        args.path,
+        format=args.path.split(".")[-1],
+        bitrate=args.bitrate,
+    )
+
+    sys.exit(0)
+
+def callback(indata: np.ndarray, frames: int, callback_time, status) -> None:
+    """ Callback for each audio block while recording. """
+    q.put(indata.copy())
+
+signal.signal(signal.SIGTERM, cleanup)
+signal.signal(signal.SIGINT, cleanup)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="record audio")
+    parser.add_argument("path", help="file path")
+    parser.add_argument("-d", "--device", help="device name")
+    parser.add_argument("-c", "--channels", type=int, default=2,
+                        help="number of audio channels")
+    parser.add_argument("-s", "--samplerate", type=float, default=48000,
+                        help="audio sample rate")
+    parser.add_argument("-b", "--bitrate", default="64k",
+                        help="audio bitrate")
+
+    args = parser.parse_args()
+
+    # device can either be string identifier or index
+    try:
+        device = int(args.device)
+    except (ValueError, TypeError):
+        device = args.device
+        # use default sounddevice selection
+        if device is not None and \
+                (len(device) == 0 or device.lower() == "none"):
+            device = None
+
+    # https://python-sounddevice.readthedocs.io/en/0.4.4/examples.html#recording-with-arbitrary-duration
+    # begin recording
+    RECORDING_START_TIME = time.time()
+    with sd.InputStream(samplerate=args.samplerate, device=device,
+                        channels=args.channels, dtype=np.int32,
+                        callback=callback) as stream:
+        while True:
+            blocks.append(q.get(block=True))
+

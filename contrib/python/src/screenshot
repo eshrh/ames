@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+import argparse
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="take screenshot")
+    parser.add_argument("path", help="file path")
+    parser.add_argument("-g", "--geometry", help="bounding box")
+    parser.add_argument("-p", "--pillow", action="store_true",
+                        help="use Pillow backend")
+
+    args = parser.parse_args()
+
+    # Pillow might be more portable
+    if args.pillow:
+        from PIL import ImageGrab
+    # but pyscreenshot works for more situations, e.g. Wayland
+    # https://github.com/ponty/pyscreenshot
+    else:
+        import pyscreenshot as ImageGrab
+
+    # https://pillow.readthedocs.io/en/latest/reference/Image.html#PIL.Image.Image.getbbox
+    if args.geometry is None:
+        bbox = None
+    # if a single line, assume geometry is in slop(1) format, i.e.
+    # {width}x{height}+{x}+{y} where (x, y) is the top left corner
+    elif len(args.geometry.splitlines()) == 1:
+        sizes, x, y = args.geometry.split("+")
+        width, height = sizes.split("x")
+        width, height, x, y = map(int, (width, height, x, y))
+        # 4-tuple of top left, bottom right coordinates
+        bbox = (x, y, x + width, y + height)
+    # otherwise, assume geometry is output from `xdotool getwindowgeometry`.
+    # Window {window number}
+    #   Position: {x},{y} (screen: {screen number})
+    #   Geometry: {width}x{height}
+    else:
+        lines = args.geometry.splitlines()
+        x, y = map(int, lines[1].split()[1].split(","))
+        width, height = map(int, lines[2].split()[1].split("x"))
+        bbox = (x, y, x + width, y + height)
+
+    # https://pillow.readthedocs.io/en/latest/reference/ImageGrab.html
+    screenshot = ImageGrab.grab(bbox=bbox)
+    screenshot.save(args.path, args.path.split(".")[-1])
+
