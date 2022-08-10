@@ -1,5 +1,6 @@
 # cython: profile=False
 from libc.stdlib cimport malloc, free
+from fileio cimport open as c_open, close, dup, dup2, O_WRONLY
 from cysignals.signals cimport (
     sig_on, sig_on_no_except, sig_off, cython_check_exception,
 )
@@ -196,10 +197,23 @@ def record(sample_rate: float,
     cdef:
         PaDeviceIndex device
         const PaDeviceInfo *info
-        int channels
+        int channels, stderr_copy, devnull
         PaTime latency
 
+    # temporarily silence stderr: https://stackoverflow.com/questions/5081657/
+    import sys, os
+    stderr_copy = dup(2)
+    devnull = c_open("/dev/null", O_WRONLY)
+    dup2(devnull, 2)
+    close(devnull)
+    # allow Python to still write to stderr
+    sys.stderr = os.fdopen(stderr_copy, "w")
+    # portaudio initialization can be noisy
     __raise_error(Pa_Initialize())
+    # restore original stderr
+    dup2(stderr_copy, 2)
+    close(stderr_copy)
+    sys.stderr = sys.__stderr__
 
     device = get_device(device_name)
     info = Pa_GetDeviceInfo(device)
