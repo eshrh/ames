@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+check_response() {
+    # check the JSON response of a request to Anki.
+    # $1 is the response from ankiconnect_request().
+    local -r error="$(echo "$1" | jq ".error")"
+    if [[ "$error" != null ]]; then
+        notify_message "${error:1:-1}"
+        exit 1
+    fi
+}
+
