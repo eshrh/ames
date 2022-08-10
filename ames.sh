@@ -42,6 +42,21 @@ usage() {
     echo "-c: export copied text (contents of the CLIPBOARD selection)"
 }
 
+check_response() {
+    # check the JSON response of a request to Anki.
+    # $1 is the response from ankiconnect_request().
+    local -r get_error='s/.*"error"[[:space:]]*:[[:space:]]*\([^,}]*\).*/\1/p'
+    local -r strip_whitespace='s/[[:space:]]*$//'
+    # if the error string itself contains "," or "}" this will end early
+    local -r error="$(echo "$1" \
+        | sed --posix -n "$get_error" \
+        | sed --posix "$strip_whitespace")"
+    if [[ "$error" != null ]]; then
+        notify_message "${error:1:-1}"
+        exit 1
+    fi
+}
+
 notify_screenshot_add() {
     # notify the user that a screenshot was added.
     if [[ "$LANG" == en* ]]; then
@@ -131,6 +146,7 @@ get_last_id() {
     local new_card_response list
 
     new_card_response="$(ankiconnect_request "$new_card_request")"
+    check_response "$new_card_response"
     list="$(echo "$new_card_response" | cut -d "[" -f2 | cut -d "]" -f1)"
     newest_card_id="$(echo "$list" | maxn)"
 }
@@ -149,7 +165,8 @@ store_file() {
     }'
     request="${request//<name>/$name}"
     request="${request/<dir>/$dir}"
-    ankiconnect_request "$request" >>/dev/null
+
+    check_response "$(ankiconnect_request "$request")"
 }
 
 gui_browse() {
@@ -163,17 +180,21 @@ gui_browse() {
         }
     }'
     request="${request/<QUERY>/$query}"
-    ankiconnect_request "$request"
+
+    check_response "$(ankiconnect_request "$request")"
 }
 
 ankiconnect_request() {
-    curl --silent localhost:8765 -X POST -d "${1:?}"
+    # send data to Anki through a HTTP request to AnkiConnect.
+    # $1 is the data to send.
+    curl --silent localhost:8765 -X POST -d "${1:?}" || \
+        echo '{"error": "Empty response from AnkiConnect. Is Anki running?"}'
 }
 
 safe_request() {
     # only send requests after opening the gui browser.
     gui_browse "nid:1"
-    ankiconnect_request "${1:?}"
+    check_response "$(ankiconnect_request "${1:?}")"
     gui_browse "nid:${newest_card_id:?Newest card is not known.}"
 }
 
@@ -196,6 +217,7 @@ update_sentence() {
     update_request="${update_request/<SENTENCE_FIELD>/$SENTENCE_FIELD}"
     local -r sentence="$(escape "$1")"
     update_request="${update_request/<sentence>/$sentence}"
+
     safe_request "$update_request"
 }
 
