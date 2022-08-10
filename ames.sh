@@ -432,7 +432,7 @@ copied_text() {
         xsel -b
     else
         echo "Couldn't find xclip or xsel." >&2
-        exit
+        exit 1
     fi
 }
 
