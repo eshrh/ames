@@ -80,7 +80,8 @@ the functionality of `ames`.
 + `wayland`: replace X11-dependent tools with wayland (wlroots)
   compatible tools
 + `python`: replace command line tools with python programs, which
-  should work cross-platform
+  should work cross-platform. Also deals with ffmpeg's
+  recording/encoding delay.
 + `jq`: replace regex-based response parsing with `jq`, leading to
   better error messages.
 

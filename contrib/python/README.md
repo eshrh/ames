@@ -83,8 +83,7 @@ https://github.com/eshrh/ames/commit/be01c3ff56a93bdff67f736bf9043b5af2562275)
   This is probably related to the delay issue since the minimum
   recording duration is also the smallest size that FFmpeg prefers.
 
-  Commit [TODO](
-)
+  Commit [`7792384`](https://github.com/eshrh/ames/commit/7792384c9b289fd692277cd61c1cff1cc45bb34d)
   fixes this issue by continuing to record until a minimum duration is reached.
   This does not change the actual length of the recorded
   audio by the same post-processing trimming to fix delay.
@@ -211,4 +210,3 @@ The contents of the clipboard are accessed with `python -m pyclip paste`.
 ### Caveats
 
 None! Except it's a bit unnecessary to wrap shell scripts with Python...
-
