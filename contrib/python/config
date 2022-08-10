@@ -6,6 +6,17 @@
 # shellcheck disable=SC2034
 OUTPUT_MONITOR=""
 
+check_response() {
+    # check the JSON response of a request to Anki.
+    # $1 is the response from ankiconnect_request().
+    local -r cmd='import json; print(json.loads(input()).get("error", None))'
+    local -r error="$(echo "$1" | python -c "$cmd")"
+    if [[ "$error" != None ]]; then
+        notify_message "$error"
+        exit 1
+    fi
+}
+
 take_screenshot_region() {
     # function to take a screenshot of a given screen region.
     # $1 is the geometry of the region from get_selection().
