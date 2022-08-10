@@ -11,8 +11,7 @@ added Anki card, making immersion mining smoother and more efficient.
 + A Bash interpreter.
 + Anki and [AnkiConnect](https://ankiweb.net/shared/info/2055492159).
   *Note that Anki must be running*.
-+ X11: Wayland version (wlroots) on this
-  [branch](https://github.com/eshrh/ames/tree/wlroots).
++ X11: Wayland version (wlroots) in `contrib/wayland`
 + `pactl`: detecting and recording from audio monitors
   (`pulseaudio` and `pipewire-pulse` tested).
 + `ffmpeg`: encoding desktop audio.
@@ -63,7 +62,8 @@ mkdir -p ~/.config/ames/ && cp /usr/share/ames/config ~/.config/ames/config
 + The aforementioned file is read after all functions have been
   defined at runtime. This means that you can change any behavior of
   ames by redefining a function in Bash. See the source code for
-  function names and some caveats for redefined functions to work.
+  function names and some caveats for redefined functions to work. For
+  example custom configs, see the contrib directory.
 + ames tries to pick the right output monitor automatically. If this doesn't
   work for you, you can first list monitor sinks with `pactl list | grep -A2
   '^Source #'` and then redefine the `OUTPUT_MONITOR` variable with the name
@@ -71,3 +71,18 @@ mkdir -p ~/.config/ames/ && cp /usr/share/ames/config ~/.config/ames/config
 + By default, images are scaled to a height of 300px.
 + Prefix your ames command with `LANG=ja` for
   Japanese notifications to achieve *maximum immersion*.
+
+## Contrib
+
+The `contrib` directory stores some custom configurations that modify
+the functionality of `ames`.
+
++ `wayland`: replace X11-dependent tools with wayland (wlroots)
+  compatible tools
++ `python`: replace command line tools with python programs, which
+  should work cross-platform
++ `jq`: replace regex-based response parsing with `jq`, leading to
+  better error messages.
+
+Please see the README files in each of their respective directories
+for more information about usage.
