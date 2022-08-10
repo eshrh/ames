@@ -39,6 +39,7 @@ usage() {
     echo "-s: interactive screenshot"
     echo "-a: screenshot same region again (defaults to -s if no region)"
     echo "-w: screenshot currently active window (xdotool)"
+    echo "-c: export copied text (contents of the CLIPBOARD selection)"
 }
 
 notify_screenshot_add() {
