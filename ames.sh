@@ -42,6 +42,15 @@ usage() {
     echo "-c: export copied text (contents of the CLIPBOARD selection)"
 }
 
+notify_message() {
+    # send a notification with a message to the user.
+    # $1 is the string containing the message text.
+    #
+    # notifies both the console and with libnotify.
+    echo "$1"
+    notify-send --hint=int:transient:1 -t 500 -u normal "$1"
+}
+
 check_response() {
     # check the JSON response of a request to Anki.
     # $1 is the response from ankiconnect_request().
@@ -60,48 +69,40 @@ check_response() {
 notify_screenshot_add() {
     # notify the user that a screenshot was added.
     if [[ "$LANG" == en* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal \
-                    "Screenshot added"
+        notify_message "Screenshot added"
     fi
     if [[ "$LANG" == ja* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal \
-                    "スクリーンショット付けました"
+        notify_message "スクリーンショット付けました"
     fi
 }
 
 notify_record_start() {
     # notify the user that a recording started.
     if [[ "$LANG" == en* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal \
-                    "Recording started..."
+        notify_message "Recording started..."
     fi
     if [[ "$LANG" == ja* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal \
-                    "録音しています..."
+        notify_message "録音しています..."
     fi
 }
 
 notify_record_stop() {
     # notify the user that a recording stopped.
     if [[ "$LANG" == en* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal \
-                    "Recording added"
+        notify_message "Recording added"
     fi
     if [[ "$LANG" == ja* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal \
-                    "録音付けました"
+        notify_message "録音付けました"
     fi
 }
 
 notify_sentence_add() {
     # notify the user that a sentence was added.
     if [[ "$LANG" == en* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal \
-                    "Sentence added"
+        notify_message "Sentence added"
     fi
     if [[ "$LANG" == ja* ]]; then
-        notify-send --hint=int:transient:1 -t 500 -u normal \
-                    "例文付けました"
+        notify_message "例文付けました"
     fi
 }
 
