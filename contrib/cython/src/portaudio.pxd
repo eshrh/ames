@@ -91,5 +91,6 @@ cdef extern from "portaudio.h":
     PaError Pa_StartStream(PaStream *stream) nogil
     PaError Pa_StopStream(PaStream *stream)
     PaError Pa_AbortStream(PaStream *stream) nogil
+    PaError Pa_IsStreamActive(PaStream *stream) nogil
     const PaStreamInfo* Pa_GetStreamInfo(PaStream *stream) nogil
 
