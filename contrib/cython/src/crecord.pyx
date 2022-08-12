@@ -64,8 +64,8 @@ cdef char *recording_data
 def get_recording() -> tuple[float, bytes]:
     """ Return the recording data as bytes. """
     if recording_size <= 0 or recording_data is NULL:
-        raise ValueError("Empty recording. \
-Please wait for at least ~0.25 seconds.")
+        raise ValueError("Empty recording. "
+                         "Please wait for at least ~0.25 seconds.")
     # return without copying, memoryview
     return (actual_samplerate, <char[:recording_size:1]> recording_data)
 
@@ -122,8 +122,8 @@ def get_device(device_name: None | int | str) -> int:
         device = device_name
         max_index = raise_error(Pa_GetDeviceCount()) - 1
         if device < 0 or device > max_index:
-            raise ValueError(f"Device index {device} " \
-f"out of the bounds [0, {max_index}].")
+            raise ValueError(f"Device index {device} "
+                             f"out of the bounds [0, {max_index}].")
     # device name, look for substring
     else:
         device = __get_device_by_name(device_name.encode())
@@ -183,8 +183,8 @@ def record(sample_rate: float,
         device_info.defaultSampleRate
     channels = num_channels
     if channels <= 0 or device_info.maxInputChannels < channels:
-        raise ValueError(f"Input only has {device_info.maxInputChannels} " \
-f"channels, requested {channels}.")
+        raise ValueError(f"Input only has {device_info.maxInputChannels} "
+                         f"channels, requested {channels}.")
     latency = get_latency(suggested_latency,
                           device_info.defaultLowInputLatency,
                           device_info.defaultHighInputLatency)
