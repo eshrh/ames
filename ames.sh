@@ -30,7 +30,7 @@ IMAGE_WIDTH="-2"
 IMAGE_HEIGHT="300"
 
 # the config is sourced at the bottom of this file to overwrite functions.
-CONFIG_FILE_PATH="$HOME/.config/ames/config"
+CONFIG_FILE_PATH=/etc/ames/config
 
 usage() {
     # display help
