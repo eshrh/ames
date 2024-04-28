@@ -29,8 +29,19 @@ IMAGE_FORMAT="webp"
 IMAGE_WIDTH="-2"
 IMAGE_HEIGHT="300"
 
+get_config_dir() {
+    # get the configuration directory
+    # adapted from https://xdgbasedirectoryspecification.com/
+    local config_dir="$XDG_CONFIG_HOME"
+    if [ -z "$config_dir" ] || [ "${config_dir::1}" != '/' ]; then
+        echo -n "$HOME/.config/ames"
+    else
+        echo -n "$config_dir/ames"
+    fi
+}
+
 # the config is sourced at the bottom of this file to overwrite functions.
-CONFIG_FILE_PATH="$HOME/.config/ames/config"
+CONFIG_FILE_PATH="$(get_config_dir)/config"
 
 usage() {
     # display help
