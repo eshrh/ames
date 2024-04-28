@@ -29,8 +29,19 @@ IMAGE_FORMAT="webp"
 IMAGE_WIDTH="-2"
 IMAGE_HEIGHT="300"
 
+get_config_dir() {
+    # get the configuration directory
+    # adapted from https://xdgbasedirectoryspecification.com/
+    local config_dir="$XDG_CONFIG_HOME"
+    if [ -z "$config_dir" ] || [ "${config_dir::1}" != '/' ]; then
+        echo -n "$HOME/.config/ames"
+    else
+        echo -n "$config_dir/ames"
+    fi
+}
+
 # the config is sourced at the bottom of this file to overwrite functions.
-CONFIG_FILE_PATH="$HOME/.config/ames/config"
+CONFIG_FILE_PATH="$(get_config_dir)/config"
 
 usage() {
     # display help
@@ -57,9 +68,9 @@ check_response() {
     local -r get_error='s/.*"error"[[:space:]]*:[[:space:]]*\([^,}]*\).*/\1/p'
     local -r strip_whitespace='s/[[:space:]]*$//'
     # if the error string itself contains "," or "}" this will end early
-    local -r error="$(echo "$1" \
-        | sed --posix -n "$get_error" \
-        | sed --posix "$strip_whitespace")"
+    local -r error="$(echo "$1" |
+        sed --posix -n "$get_error" |
+        sed --posix "$strip_whitespace")"
     if [[ "$error" != null ]]; then
         notify_message "${error:1:-1}"
         exit 1
@@ -188,7 +199,7 @@ gui_browse() {
 ankiconnect_request() {
     # send data to Anki through a HTTP request to AnkiConnect.
     # $1 is the data to send.
-    curl --silent localhost:8765 -X POST -d "${1:?}" || \
+    curl --silent localhost:8765 -X POST -d "${1:?}" ||
         echo '{"error": "Empty response from AnkiConnect. Is Anki running?"}'
 }
 
@@ -374,27 +385,27 @@ record_function() {
         -ac 2 \
         -af "volume=${AUDIO_VOLUME},silenceremove=1:0:-50dB" \
         -ab "$AUDIO_BITRATE" \
-        "$audio_file" 1> /dev/null &
+        "$audio_file" 1>/dev/null &
 }
 
 record_start() {
     # begin recording audio.
     local -r audio_file="$(mktemp \
-                               "/tmp/ffmpeg-recording.XXXXXX.$AUDIO_FORMAT")"
+        "/tmp/ffmpeg-recording.XXXXXX.$AUDIO_FORMAT")"
     echo "$audio_file" >"$recording_toggle"
 
     if [ "$OUTPUT_MONITOR" == "" ]; then
-        local -r output="$(pactl info \
-                               | grep 'Default Sink' \
-                               | awk '{print $NF ".monitor"}')"
+        local -r output="$(pactl info |
+            grep 'Default Sink' |
+            awk '{print $NF ".monitor"}')"
     else
         local -r output="$OUTPUT_MONITOR"
     fi
 
     record_function "$output" "$audio_file"
-    echo "$!" >> "$recording_toggle"
+    echo "$!" >>"$recording_toggle"
 
-    current_time >> "$recording_toggle"
+    current_time >>"$recording_toggle"
 
     notify_record_start
 }
@@ -420,12 +431,12 @@ record_end() {
     local -r audio_backup="/tmp/ffmpeg-recording-audio-backup.$AUDIO_FORMAT"
     cp "$audio_file" "$audio_backup"
     ffmpeg -nostdin \
-           -y \
-           -loglevel error \
-           -i "$audio_backup" \
-           -c copy \
-           -to "${duration}ms" \
-           "$audio_file" 1> /dev/null
+        -y \
+        -loglevel error \
+        -i "$audio_backup" \
+        -c copy \
+        -to "${duration}ms" \
+        "$audio_file" 1>/dev/null
 
     store_file "${audio_file}"
     update_sound "$(basename -- "$audio_file")"
@@ -447,11 +458,9 @@ record() {
 
 copied_text() {
     # get the contents of the clipboard.
-    if command -v xclip &> /dev/null
-    then
+    if command -v xclip &>/dev/null; then
         xclip -o -selection clipboard
-    elif command -v xsel &> /dev/null
-    then
+    elif command -v xsel &>/dev/null; then
         xsel -b
     else
         echo "Couldn't find xclip or xsel." >&2
@@ -479,12 +488,12 @@ fi
 
 while getopts 'hrsawc' flag; do
     case "${flag}" in
-        h) usage ;;
-        r) record ;;
-        s) screenshot ;;
-        a) again ;;
-        w) screenshot_window ;;
-        c) clipboard ;;
-        *) ;;
+    h) usage ;;
+    r) record ;;
+    s) screenshot ;;
+    a) again ;;
+    w) screenshot_window ;;
+    c) clipboard ;;
+    *) ;;
     esac
 done
