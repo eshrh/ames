@@ -25,8 +25,15 @@ install:
 	@echo ${NAME} has been installed
 
 uninstall:
-	@rm -rf ${DESTDIR}${BINDIR}/${TARGETBIN}
+	@rm -f ${DESTDIR}${BINDIR}/${TARGETBIN}
+	@mkdir -p ${DESTDIR}${BINDIR}
 	@rmdir -p --ignore-fail-on-non-empty ${DESTDIR}${BINDIR}
+	@rm -f ${DESTDIR}${DOCDIR}/${DOCFILE}
+	@mkdir -p ${DESTDIR}${DOCDIR}
+	@rmdir -p --ignore-fail-on-non-empty ${DESTDIR}${DOCDIR}
+	@rm -f ${DESTDIR}${CONFIGDIR}/${CONFIGFILE}
+	@mkdir -p ${DESTDIR}${CONFIGDIR}
+	@rmdir -p --ignore-fail-on-non-empty ${DESTDIR}${CONFIGDIR}
 	@echo ${NAME} has been removed
 
-#.PHONY: default all install uninstall 
+#.PHONY: default all install uninstall
