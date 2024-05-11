@@ -15,13 +15,9 @@ all:
 	@echo Run \'make install\' to install ${NAME} on your device
 
 install:
-	@mkdir -p ${DESTDIR}${BINDIR}
-	@cp ${SRCBIN} ${DESTDIR}${BINDIR}/${TARGETBIN}
-	@chmod 755 ${DESTDIR}${BINDIR}/${TARGETBIN}
-	@mkdir -p ${DESTDIR}${DOCDIR}
-	@cp ${DOCFILE} ${DESTDIR}${DOCDIR}/${DOCFILE}
-	@mkdir -p ${DESTDIR}${CONFIGDIR}
-	@cp ${CONFIGFILE} ${DESTDIR}${CONFIGDIR}
+	@install -Dm755 ${SRCBIN} -T ${DESTDIR}${BINDIR}/${TARGETBIN}
+	@install -Dm644 ${DOCFILE} -T ${DESTDIR}${DOCDIR}/${DOCFILE}
+	@install -Dm644 ${CONFIGFILE} -T ${DESTDIR}${CONFIGDIR}/${CONFIGFILE}
 	@echo ${NAME} has been installed
 
 uninstall:
