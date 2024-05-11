@@ -39,7 +39,7 @@ added Anki card, making immersion mining smoother and more efficient.
     * `bash ~/path/to/ames.sh -w`: screenshot the currently active window
       (requires xdotool).
     * `bash ~/path/to/ames.sh -c`: exports the currently copied
-       text in the clipboard to the sentence field (requires xsel).
+       text in the clipboard to the sentence field (requires xclip).
 
 ### Arch users
 
@@ -53,6 +53,15 @@ mkdir -p ~/.config/ames/ && cp /usr/share/ames/config ~/.config/ames/config
 4. Bind the same commands however you want, but now the `ames`
    command should be in your `PATH`, so you can bind, for
    example, `ames -s` instead of `bash ~/path/to/ames.sh -s`.
+
+### GNU Make
+
+1. Move `contrib/Makefile.contrib` to the root of the project:
+```bash
+cp contrib/Makefile.contrib Makefile
+```
+2. `sudo make install`.
+3. See [Arch users](#arch-users).
 
 ## Notes
 

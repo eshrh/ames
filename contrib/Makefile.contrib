@@ -1,0 +1,35 @@
+PREFIX?=/usr
+BINDIR=${PREFIX}/bin
+DOCDIR=${PREFIX}/share/man/man1
+CONFIGDIR=${PREFIX}/share/ames
+
+DOCFILE=ames.1
+CONFIGFILE=config
+SRCBIN=ames.sh
+TARGETBIN=ames
+NAME=ames
+
+default: all
+
+all:
+	@echo Run \'make install\' to install ${NAME} on your device
+
+install:
+	@install -Dm755 ${SRCBIN} -T ${DESTDIR}${BINDIR}/${TARGETBIN}
+	@install -Dm644 ${DOCFILE} -T ${DESTDIR}${DOCDIR}/${DOCFILE}
+	@install -Dm644 ${CONFIGFILE} -T ${DESTDIR}${CONFIGDIR}/${CONFIGFILE}
+	@echo ${NAME} has been installed
+
+uninstall:
+	@rm -f ${DESTDIR}${BINDIR}/${TARGETBIN}
+	@mkdir -p ${DESTDIR}${BINDIR}
+	@rmdir -p --ignore-fail-on-non-empty ${DESTDIR}${BINDIR}
+	@rm -f ${DESTDIR}${DOCDIR}/${DOCFILE}
+	@mkdir -p ${DESTDIR}${DOCDIR}
+	@rmdir -p --ignore-fail-on-non-empty ${DESTDIR}${DOCDIR}
+	@rm -f ${DESTDIR}${CONFIGDIR}/${CONFIGFILE}
+	@mkdir -p ${DESTDIR}${CONFIGDIR}
+	@rmdir -p --ignore-fail-on-non-empty ${DESTDIR}${CONFIGDIR}
+	@echo ${NAME} has been removed
+
+#.PHONY: default all install uninstall
