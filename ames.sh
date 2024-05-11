@@ -30,7 +30,8 @@ IMAGE_WIDTH="-2"
 IMAGE_HEIGHT="300"
 
 # the config is sourced at the bottom of this file to overwrite functions.
-CONFIG_FILE_PATH=/etc/ames/config
+GLOBAL_CONFIG_FILE_PATH="/etc/ames/config"
+USER_CONFIG_FILE_PATH="$(get_config_dir)/config"
 
 usage() {
     # display help
@@ -467,9 +468,14 @@ clipboard() {
     notify_sentence_add
 }
 
+
+if [[ -f "$GLOBAL_CONFIG_FILE_PATH" ]]; then
+    # shellcheck disable=SC1090
+    source "$GLOBAL_CONFIG_FILE_PATH"
+fi
 if [[ -f "$CONFIG_FILE_PATH" ]]; then
     # shellcheck disable=SC1090
-    source "$CONFIG_FILE_PATH"
+    source "$USER_CONFIG_FILE_PATH"
 fi
 
 if [[ -z "${1-}" ]]; then
