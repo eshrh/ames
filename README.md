@@ -61,6 +61,7 @@ mkdir -p ~/.config/ames/ && cp /usr/share/ames/config ~/.config/ames/config
 cp contrib/Makefile.contrib Makefile
 ```
 2. `sudo make install`.
+3. See [Arch users](#arch-users).
 
 ## Notes
 
