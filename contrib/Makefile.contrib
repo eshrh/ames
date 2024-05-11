@@ -1,7 +1,7 @@
 PREFIX?=/usr
 BINDIR=${PREFIX}/bin
-DOCDIR=${PREFIX}/local/man/man1
-CONFIGDIR=/etc/ames
+DOCDIR=${PREFIX}/share/man/man1
+CONFIGDIR=${PREFIX}/share/ames
 
 DOCFILE=ames.1
 CONFIGFILE=config
