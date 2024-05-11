@@ -18,9 +18,10 @@ install:
 	@mkdir -p ${DESTDIR}${BINDIR}
 	@cp ${SRCBIN} ${DESTDIR}${BINDIR}/${TARGETBIN}
 	@chmod 755 ${DESTDIR}${BINDIR}/${TARGETBIN}
-	@cp ${DOCFILE} ${DOCDIR}/${DOCFILE}
-	@mkdir -p ${CONFIGDIR}
-	@cp ./${CONFIGFILE} ${CONFIGDIR}
+	@mkdir -p ${DESTDIR}${DOCDIR}
+	@cp ${DOCFILE} ${DESTDIR}${DOCDIR}/${DOCFILE}
+	@mkdir -p ${DESTDIR}${CONFIGDIR}
+	@cp ${CONFIGFILE} ${DESTDIR}${CONFIGDIR}
 	@echo ${NAME} has been installed
 
 uninstall:
