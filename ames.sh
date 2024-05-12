@@ -32,7 +32,7 @@ IMAGE_HEIGHT="300"
 get_config_dir() {
     # get the configuration directory
     # adapted from https://xdgbasedirectoryspecification.com/
-    local config_dir="$XDG_CONFIG_HOME"
+    local config_dir="${XDG_CONFIG_HOME-}"
     if [ -z "$config_dir" ] || [ "${config_dir::1}" != '/' ]; then
         echo -n "$HOME/.config/ames"
     else
