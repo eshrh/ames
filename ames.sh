@@ -395,7 +395,7 @@ record_start() {
     echo "$audio_file" >"$recording_toggle"
 
     if [ "$OUTPUT_MONITOR" == "" ]; then
-        local -r output="$(pactl info \
+        local -r output="$(LC_ALL=C pactl info \
                                | grep 'Default Sink' \
                                | awk '{print $NF ".monitor"}')"
     else
