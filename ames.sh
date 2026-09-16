@@ -175,24 +175,6 @@ get_last_id() {
     newest_card_id="$(echo "$list" | maxn)"
 }
 
-store_file() {
-    # store a media file.
-    local -r dir="${1:?}"
-    local -r name="$(basename -- "$dir")"
-    local request='{
-        "action": "storeMediaFile",
-        "version": 6,
-        "params": {
-            "filename": "<name>",
-            "path": "<dir>"
-        }
-    }'
-    request="${request//<name>/$name}"
-    request="${request/<dir>/$dir}"
-
-    check_response "$(ankiconnect_request "$request")"
-}
-
 gui_browse() {
     # open the gui card browser and point the modified card.
     local -r query="${1:-nid:1}"
@@ -249,18 +231,28 @@ update_img() {
     # update card with image.
     # $1 is the path to the image.
     get_last_id
+    local -r filename="$(basename -- "$1")"
     local update_request='{
         "action": "updateNoteFields",
         "version": 6,
         "params": {
             "note": {
                 "id": <id>,
-                "fields": { "<SCREENSHOT_FIELD>": "<img src=\"<path>\">" }
+                "fields": {
+                    "<SCREENSHOT_FIELD>":""
+                 },
+                 "picture": {
+                    "filename":"<filename>",
+                    "path":"<path>",
+                    "fields":["<SCREENSHOT_FIELD>"]
+                 }
             }
         }
     }'
     update_request="${update_request/<id>/$newest_card_id}"
     update_request="${update_request/<SCREENSHOT_FIELD>/$SCREENSHOT_FIELD}"
+    update_request="${update_request/<SCREENSHOT_FIELD>/$SCREENSHOT_FIELD}"
+    update_request="${update_request/<filename>/$filename}"
     update_request="${update_request/<path>/$1}"
 
     safe_request "$update_request"
@@ -270,6 +262,7 @@ update_sound() {
     # update card with sound, given by an audio file.
     # $1 is the path to the audio file.
     get_last_id
+    local -r filename="$(basename -- "$1")"
     local update_request='{
         "action": "updateNoteFields",
         "version": 6,
@@ -277,13 +270,20 @@ update_sound() {
             "note": {
                 "id": <id>,
                 "fields": {
-                    "<AUDIO_FIELD>":"[sound:<path>]"
+                    "<AUDIO_FIELD>":""
+                 },
+                 "audio": {
+                    "filename":"<filename>",
+                    "path":"<path>",
+                    "fields":["<AUDIO_FIELD>"]
                  }
             }
         }
     }'
     update_request="${update_request/<id>/$newest_card_id}"
     update_request="${update_request/<AUDIO_FIELD>/$AUDIO_FIELD}"
+    update_request="${update_request/<AUDIO_FIELD>/$AUDIO_FIELD}"
+    update_request="${update_request/<filename>/$filename}"
     update_request="${update_request/<path>/$1}"
 
     safe_request "$update_request"
@@ -335,8 +335,7 @@ screenshot() {
 
     rm "$path"
     echo "$geom" >/tmp/previous-maim-screenshot
-    store_file "$converted_path"
-    update_img "$(basename -- "$converted_path")"
+    update_img "$converted_path"
     notify_screenshot_add
 }
 
@@ -352,9 +351,7 @@ again() {
         take_screenshot_region "$(cat /tmp/previous-maim-screenshot)" "$path"
         encode_img "$path" "$converted_path"
         rm "$path"
-        store_file "$converted_path"
-        get_last_id
-        update_img "$(basename -- "$converted_path")"
+        update_img "$converted_path"
         notify_screenshot_add
     else
         screenshot
@@ -369,8 +366,7 @@ screenshot_window() {
     take_screenshot_window "$path"
     encode_img "$path" "$converted_path"
     rm "$path"
-    store_file "$converted_path"
-    update_img "$(basename -- "$converted_path")"
+    update_img "$converted_path"
     notify_screenshot_add
 }
 
@@ -450,8 +446,7 @@ record_end() {
            -to "${duration}ms" \
            "$audio_file" 1> /dev/null
 
-    store_file "${audio_file}"
-    update_sound "$(basename -- "$audio_file")"
+    update_sound "$audio_file"
 
     notify_record_stop
 }
